@@ -42,7 +42,7 @@ Each image .tag file must now be combined with the reference image .tag file to 
 
 `mv spec_list.txt <PROJECT>/Source`  
 
-Use the Tag_Combine.R script (https://github.com/jaydevine/Landmarking/blob/master/R/Tag_Combine.R) to combine the initialization landmark files:
+Use the Tag_Combine.R script (https://github.com/jaydevine/CranioMorph/blob/main/Preprocessing/Tag_Combine.R) to combine the initialization landmark files:
 
 `Rscript Tag_Combine.R`  
 
