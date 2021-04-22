@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Preprocessing and initialization instructions.
 
-Citation: Devine, J., Aponte, J.D., Katz, D.C., Liu, W., Vercio, L.D.L., Forkert, N.D., Marcucio, R., Percival, C.J. and Hallgrímsson, B., 2020. A Registration and Deep Learning Approach to Automated Landmark Detection for Geometric Morphometrics. Evolutionary Biology, pp.1-14.
+Citation:
 
 Preprocessing and initialization can easily be performed on a local machine.
 
@@ -18,13 +18,13 @@ compute cluster for remote processing. Move to a /local/directory/of/choice and 
 
 `mkdir -p <PROJECT\>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
 
-Next we want to convert our set of image volumes to .mnc. You can find conversion commands here: http://bic-mni.github.io/man-pages/. You can also use ITK to convert, e.g., single volume .tiff files. If our resolution is 35 microns or 0.035 mm, we could try the following:
+Next we want to convert our set of image volumes to .mnc. You can find conversion commands at http://bic-mni.github.io/man-pages/ and in our GitHub CranioMorph "Preprocessing" directory (https://github.com/jaydevine/CranioMorph/tree/main/Preprocessing). 
 
-`for file in *.tiff; do base=$(basename ${file} .tiff); echo $base; itk_convert $file ${base}.mnc; minc_modify_header -dinsert xspace:step=0.035 ${base}.mnc; minc_modify_header -dinsert yspace:step=0.035 ${base}.mnc; minc_modify_header -dinsert zspace:step=0.035 ${base}.mnc; done`
+Let's place our converted .mnc files in <PROJECT>/Source/MNC. 
+  
+If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py). Skip to line 83 to setup your cluster for the registrations.
 
-Let's place our .mnc files in <PROJECT>/Source/MNC.  
-
-Now we want to render the image volumes as surfaces and *ROUGHLY* place >=4 landmarks that can be used to initialize (i.e. translate and rotate) each image into a target image space, where we have 1 to 1 voxel correspondences. An interesting way to do this is blur the image (0.3 is 300 microns, which is 10x our original resolution. This homogenizes the intensity profile), then loop through the blurred images and automatically generate a surface:  
+If your images were not scanned in a standard orientation, we need to manually initialize them. To do this, we need to render the image volumes as surfaces and roughly place >=4 landmarks to translate and rotate each image into a reference image space, where we have 1 to 1 voxel correspondences. An interesting way to do this is blur the image (e.g., mincblur -fwhm 0.3, where 0.3 is 300 microns or 10x our original resolution. This homogenizes the intensity profile), then loop through the blurred images and automatically generate a surface:  
 
 `for file in *.mnc; do base=$(basename ${file} .mnc); echo ${base}; mincblur -fwhm 0.3 ${file} ${base}; biModalT=$(mincstats -quiet -biModalT ${base}_blur.mnc); echo ${biModalT}; marching_cubes ${base}_blur.mnc ${base}.obj ${biModalT}; done`
 
@@ -46,11 +46,7 @@ Use the Tag_Combine.R script (https://github.com/jaydevine/Landmarking/blob/mast
 
 `Rscript Tag_Combine.R`  
 
-Let's move our original *_landmarks.tag files to the Tag directory now. 
-
-`mv *_landmarks.tag <PROJECT>/Source/Tag`  
-
-Create rigid transformation (.xfm) files to resample the target images into the reference space: 
+Let's move our original *_landmarks.tag files to a different directory, then use the combined .tag files to create rigid transformation (.xfm) files to resample the target images into the reference space: 
 
 `for file in *to*.tag; do base=$(basename ${file} .tag); echo ${base}; tagtoxfm -lsq6 ${file} ${base}.xfm; done`  
 
@@ -78,7 +74,7 @@ With this average, or with your atlas file, we want to create a mask. The purpos
 
 `mincmorph -clobber -successive B[lower:upper]DDDDDDDD LM_average.mnc LM_average_mask.mnc`  
 
-where lower and upper are the lower and upper bounds of the intensities/densities you wish to include in the mask. "D" refers to dilation and it is used to fill in holes of the mask. Adding more "D"s simply means more dilations. Ideally you have a mask that covers all of the desired anatomy and has no holes. If you have an atlas, just change LM_average.mnc to the atlas name. We use the name NL_4_average.mnc in our scripts.  
+where lower and upper are the lower and upper bounds of the densities you wish to include in the mask. "D" refers to dilation and it is used to fill in holes of the mask. Adding more "D"s simply means more dilations. Ideally you have a mask that covers all of the desired anatomy and has no holes. If you have an atlas, just change LM_average.mnc to the atlas name. We use the name NL_4_average.mnc in our scripts.  
 
 We now have an atlas (or an initialized average), an atlas mask (or an initilaized average mask), and a set of source images that have been rigidly aligned to the space of this reference image. We want to put these images onto a cluster for parallel registrations, as this is a computationally intense process. To do so, we first ssh into our cluster of choice:
 
@@ -98,6 +94,6 @@ In a separate Terminal, sftp to "put" the atlas/average, mask, and initialized .
 
 `put *.mnc`  
 
-Next, follow the Python scripts in https://github.com/jaydevine/Landmarking/tree/master/Python to produce a set of Bash (.sh) scripts that will be ran on the cluster. There are Python scripts for pairwise registration (if you've already created/have an atlas) and atlas construction. 
+Next, follow the non-linear registration Python script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py) to produce a set of Bash (.sh) scripts that will be ran on the cluster. There are Python scripts for pairwise registration (if you've already created/have an atlas) and atlas construction. 
 
 #------------------------------------------------------------------------------------------------------------------------
