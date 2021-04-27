@@ -40,7 +40,7 @@ Each image .tag file must now be combined with the reference image .tag file to 
 
 `sed -i 's/.mnc//g' spec_list.txt`  
 
-`mv spec_list.txt /path/to/<PROJECT>/Source`  
+`mv spec_list.txt /path/to/\<PROJECT\>/Source`  
 
 Use the Tag_Combine.R script (https://github.com/jaydevine/CranioMorph/blob/main/Preprocessing/Tag_Combine.R) to combine the initialization landmark files:
 
@@ -60,7 +60,7 @@ Use the .xfm matrices to resample the images. We can also include an intensity n
 
 `for file in *.xfm; do base=$(basename $file .xfm); echo $base; mincresample -like ${ref}.mnc -transformation $file ${base}.mnc ${base}_to_ref.mnc; nu_correct ${base}_to_ref.mnc ${base}_corr.mnc; mincnorm -out_floor 0 -out_ceil 1 ${base}_corr.mnc ${base}_norm.mnc; done`  
 
-After the resampling is done, clean up the directories. Move the original files to /path/to/<PROJECT>/Source/Orig and the corrected *corr* files to /path/to/\<PROJECT\>/Source/Corr. We want to use the *_norm.mnc images going forward. Most of the processing to come will require the original specimen names, so let's just rename:
+After the resampling is done, clean up the directories. Move the original files to /path/to/\<PROJECT\>/Source/Orig and the corrected *corr* files to /path/to/\<PROJECT\>/Source/Corr. We want to use the *_norm.mnc images going forward. Most of the processing to come will require the original specimen names, so let's just rename:
 
 `for file in *norm.mnc; do [ -f "$file" ] || continue; mv $file ${file//_norm}; done`  
 
