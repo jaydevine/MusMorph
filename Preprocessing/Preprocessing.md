@@ -16,11 +16,11 @@ compute cluster for remote processing. Move to /path/to/local/directory and let 
 
 `cd /path/to/local/directory`  
 
-`mkdir -p <PROJECT\>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
+`mkdir -p <PROJECT>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
 
 Next we want to convert our set of image volumes to .mnc. You can find conversion commands at http://bic-mni.github.io/man-pages/ and in our GitHub CranioMorph "Preprocessing" directory (https://github.com/jaydevine/CranioMorph/tree/main/Preprocessing). 
 
-Let's place our converted .mnc files in /path/to/<PROJECT>/Source/MNC. 
+Let's place our converted .mnc files in /path/to/\<PROJECT\>/Source/MNC. 
   
 If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py). Skip to the end of this file to setup your cluster for the registrations.
 
@@ -40,7 +40,7 @@ Each image .tag file must now be combined with the reference image .tag file to 
 
 `sed -i 's/.mnc//g' spec_list.txt`  
 
-`mv spec_list.txt /path/to/\<PROJECT\>/Source`  
+`mv spec_list.txt /path/to/<PROJECT>/Source`  
 
 Use the Tag_Combine.R script (https://github.com/jaydevine/CranioMorph/blob/main/Preprocessing/Tag_Combine.R) to combine the initialization landmark files:
 
