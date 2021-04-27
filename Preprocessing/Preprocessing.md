@@ -20,9 +20,9 @@ compute cluster for remote processing. Move to a /local/directory/of/choice and 
 
 Next we want to convert our set of image volumes to .mnc. You can find conversion commands at http://bic-mni.github.io/man-pages/ and in our GitHub CranioMorph "Preprocessing" directory (https://github.com/jaydevine/CranioMorph/tree/main/Preprocessing). 
 
-Let's place our converted .mnc files in <PROJECT>/Source/MNC. 
+Let's place our converted .mnc files in /path/to/<PROJECT>/Source/MNC. 
   
-If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py). Skip to line 83 to setup your cluster for the registrations.
+If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py). Skip to the end of this file to setup your cluster for the registrations.
 
 If your images were not scanned in a standard orientation, we need to manually initialize them. To do this, we need to render the image volumes as surfaces and roughly place >=4 landmarks to translate and rotate each image into a reference image space, where we have 1 to 1 voxel correspondences. An interesting way to do this is blur the image (e.g., mincblur -fwhm 0.3, where 0.3 is 300 microns or 10x our original resolution. This homogenizes the intensity profile), then loop through the blurred images and automatically generate a surface:  
 
@@ -76,7 +76,7 @@ With this average, or with your atlas file, we want to create a mask. The purpos
 
 where lower and upper are the lower and upper bounds of the densities you wish to include in the mask. "D" refers to dilation and it is used to fill in holes of the mask. Adding more "D"s simply means more dilations. Ideally you have a mask that covers all of the desired anatomy and has no holes. If you have an atlas, just change LM_average.mnc to the atlas name. We use the name NL_4_average.mnc in our scripts.  
 
-We now have an atlas (or an initialized average), an atlas mask (or an initilaized average mask), and a set of source images that have been rigidly aligned to the space of this reference image. We want to put these images onto a cluster for parallel registrations, as this is a computationally intense process. To do so, we first ssh into our cluster of choice:
+We should now have an atlas (or an initialized average), an atlas mask (or an initilaized average mask), and a set of source images that have been rigidly aligned to the space of this reference image. We want to put these images onto a cluster for parallel registrations, as this is a computationally intense process. To do so, we first ssh into our cluster of choice:
 
 `ssh <USER>@clustername`  
 
