@@ -1,7 +1,14 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Python script for pairwise spatial normalization using SyN's non-linear algorithm. It will generate a series of Bash scripts that will pairwise register your images to an atlas.
-# These scripts should be submitted to a compute cluster using the MINC toolkit module, but they can also be ran locally; all you need to do is alter the paths. Note that the parameters used throughout this script have been adapted for isotropic 35 micron uCT volumes.
-# You'll need to adapt the blurring and registration values to your data.
+# This is a Python script for pairwise spatial normalization using SyN's non-linear algorithm. It will generate a series of Bash scripts that will pairwise register your images to an atlas.
+# Any compute cluster can be used. To run these scripts, you must install the MINC Toolkit module onto the cluster beforehand, unless one already exists. You will notice here, for example, that we use a module 
+# called "minc/1.9.15", which is defined in the Bash header of every script via "module load minc/1.9.15". SLURM identifies the software on the cluster using this line. Other parameters you can play around 
+# with are time and memory. 
+
+# The resulting Bash scripts non-linearly register high-resolution mouse images (35 um) to an atlas. Other resolutions can be used, but the blurring and registratation step values need to be scaled accordingly. 
+# For instance, if you have 100 um image files, you would just scale the blurring values and the registration step values by a factor of 2. To execute these scripts, upload them to your remote
+# /path/to/<PROJECT>/Scripts directory, and run "sbatch Job_Submission_First.sh". 
+
+
 
 # Citation: Percival, C.J., Devine, J., Darwin, B.C., Liu, W., van Eede, M., Henkelman, R.M. and Hallgrimsson, B., 2019. The effect of automated landmark identification on morphometric analyses. J Anat (2019). https://doi.org/10.1111/joa.12973
 # Citation: Devine, J., Aponte, J.D., Katz, D.C. et al. A Registration and Deep Learning Approach to Automated Landmark Detection for Geometric Morphometrics. Evol Biol (2020). https://doi.org/10.1007/s11692-020-09508-8
@@ -19,77 +26,76 @@ import csv
 # 5) The mask and initialized source images must be sftp'd into your remote /home/$USER/<PROJECT>/Source/MNC directory on the cluster.
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Define local working directory.
-os.chdir("/path/to/project/")
-# Define list of all specimens. This should should be a single column of your specimen names (without the .mnc suffix). Make sure there aren't any hidden characters
-# in the list (e.g., a space beside a name).
-All_Specimens = "/path/to/project/test_list.txt"
+os.chdir("/path/to/<PROJECT>/Scripts")
+# Define list of all specimens Here, spec_list.txt should be a list of all specimens you intend to register. 
+All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 
 # Create remote directory structure that matches your local structure. E.g.:
 # mkdir -p <PROJECT\>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
 # Define remote directories (i.e., your compute cluster paths). We use the notation below because it is commonly seen in MINC.
-Scripts_path = "/home/$USER/<PROJECT>/Scripts/"
-Source_XFM_path = "/home/$USER/<PROJECT>/Source/XFM/"
-Source_MNC_path = "/home/$USER/<PROJECT>/Source/MNC/"
-Source_Tag_path = "/home/$USER/<PROJECT>/Source/Tag/"
-lsq6_Blurred_path = "/home/$USER/<PROJECT>/lsq6/Blurred/"
-lsq6_XFM_path = "/home/$USER/<PROJECT>/lsq6/XFM/"
-lsq6_MNC_path = "/home/$USER/<PROJECT>/lsq6/MNC/"
-lsq12_Blurred_path = "/home/$USER/<PROJECT>/lsq12/Blurred/"
-lsq12_XFM_path = "/home/$USER/<PROJECT>/lsq12/XFM/"
-lsq12_MNC_path = "/home/$USER/<PROJECT>/lsq12/MNC/"
-nl_Init_path = "/home/$USER/<PROJECT>/nl/INIT/"
-nl_Blurred_path = "/home/$USER/<PROJECT>/nl/Blurred/"
-nl_XFM_path = "/home/$USER/<PROJECT>/nl/XFM/"
-nl_MNC_path = "/home/$USER/<PROJECT>/nl/MNC/"
+Scripts_path = "/path/to/<PROJECT>/Scripts/"
+Source_XFM_path = "/path/to/<PROJECT>/Source/XFM/"
+Source_MNC_path = "/path/to/<PROJECT>/Source/MNC/"
+Source_Tag_path = "/path/to/<PROJECT>/Source/Tag/"
+lsq6_Blurred_path = "/path/to/<PROJECT>/lsq6/Blurred/"
+lsq6_XFM_path = "/path/to/<PROJECT>/lsq6/XFM/"
+lsq6_MNC_path = "/path/to/<PROJECT>/lsq6/MNC/"
+lsq12_Blurred_path = "/path/to/<PROJECT>/lsq12/Blurred/"
+lsq12_XFM_path = "/path/to/<PROJECT>/lsq12/XFM/"
+lsq12_MNC_path = "/path/to/<PROJECT>/lsq12/MNC/"
+nl_Init_path = "/path/to/<PROJECT>/nl/INIT/"
+nl_Blurred_path = "/path/to/<PROJECT>/nl/Blurred/"
+nl_XFM_path = "/path/to/<PROJECT>/nl/XFM/"
+nl_MNC_path = "/path/to/<PROJECT>/nl/MNC/"
 
 # Define average files.
-nl_4_Avg_Mask = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average.mnc"
-nl_4_Avg = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask.mnc"
-nl_4_Avg_LM = "/home/$USER/<PROJECT>/nl/MNC/NL_4_average_landmarks.tag"
+nl_4_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/NL_4_average.mnc"
+nl_4_Avg = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask.mnc"
+nl_4_Avg_LM = "/path/to/<PROJECT>/Source/MNC/NL_4_average_landmarks.tag"
 
 # Define blur files without "_blur" suffix.
-nl_4_Avg_Mask_352 = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_352"
-nl_4_Avg_Mask_176 = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_176"
-nl_4_Avg_Mask_098 = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_098"
-nl_4_Avg_Mask_078 = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_078"
-nl_4_Avg_Mask_064 = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_064"
-nl_4_Avg_Mask_050 = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_050"
-nl_4_Avg_352 = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_352"
-nl_4_Avg_176 = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_176"
-nl_4_Avg_098 = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_098"
-nl_4_Avg_078 = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_078"
-nl_4_Avg_064 = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_064"
-nl_4_Avg_050 = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_050"
+nl_4_Avg_Mask_352 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352"
+nl_4_Avg_Mask_176 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_176"
+nl_4_Avg_Mask_098 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_098"
+nl_4_Avg_Mask_078 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_078"
+nl_4_Avg_Mask_064 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_064"
+nl_4_Avg_Mask_050 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_050"
+nl_4_Avg_352 = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_352"
+nl_4_Avg_176 = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_176"
+nl_4_Avg_098 = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098"
+nl_4_Avg_078 = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_078"
+nl_4_Avg_064 = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_064"
+nl_4_Avg_050 = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_050"
 
 # Define blur files with "_blur" suffix.
-nl_4_Avg_Mask_352_Blur = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_352_blur.mnc"
-nl_4_Avg_Mask_176_Blur = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_176_blur.mnc"
-nl_4_Avg_Mask_098_Blur = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_098_blur.mnc"
-nl_4_Avg_Mask_078_Blur = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_078_blur.mnc"
-nl_4_Avg_Mask_064_Blur = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_064_blur.mnc"
-nl_4_Avg_Mask_050_Blur = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_050_blur.mnc"
-nl_4_Avg_352_Blur = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_352_blur.mnc"
-nl_4_Avg_176_Blur = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_176_blur.mnc"
-nl_4_Avg_098_Blur = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_098_blur.mnc"
-nl_4_Avg_098_Dxyz = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_098_dxyz.mnc"
-nl_4_Avg_078_Blur = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_078_blur.mnc"
-nl_4_Avg_064_Blur = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_064_blur.mnc"
-nl_4_Avg_050_Blur = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_050_blur.mnc"
+nl_4_Avg_Mask_352_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352_blur.mnc"
+nl_4_Avg_Mask_176_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_176_blur.mnc"
+nl_4_Avg_Mask_098_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_098_blur.mnc"
+nl_4_Avg_Mask_078_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_078_blur.mnc"
+nl_4_Avg_Mask_064_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_064_blur.mnc"
+nl_4_Avg_Mask_050_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_050_blur.mnc"
+nl_4_Avg_352_Blur = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_352_blur.mnc"
+nl_4_Avg_176_Blur = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_176_blur.mnc"
+nl_4_Avg_098_Blur = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098_blur.mnc"
+nl_4_Avg_098_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098_dxyz.mnc"
+nl_4_Avg_078_Blur = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_078_blur.mnc"
+nl_4_Avg_064_Blur = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_064_blur.mnc"
+nl_4_Avg_050_Blur = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_050_blur.mnc"
 
 # Define blur files with "dxyz" suffix.
-nl_4_Avg_Mask_352_Dxyz = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_352_dxyz.mnc"
-nl_4_Avg_Mask_176_Dxyz = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_176_dxyz.mnc"
-nl_4_Avg_Mask_098_Dxyz = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_098_dxyz.mnc"
-nl_4_Avg_Mask_078_Dxyz = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_078_dxyz.mnc"
-nl_4_Avg_Mask_064_Dxyz = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_064_dxyz.mnc"
-nl_4_Avg_Mask_050_Dxyz = "/home/$USER/<PROJECT>/Source/MNC/NL_4_average_mask_050_dxyz.mnc"
-nl_4_Avg_352_Dxyz = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_352_dxyz.mnc"
-nl_4_Avg_176_Dxyz = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_176_dxyz.mnc"
-nl_4_Avg_098_Dxyz = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_098_dxyz.mnc"
-nl_4_Avg_078_Dxyz = "/home/$USER/<PROJECT>/lsq6/Blurred/NL_4_average_078_dxyz.mnc"
-nl_4_Avg_064_Dxyz = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_064_dxyz.mnc"
-nl_4_Avg_050_Dxyz = "/home/$USER/<PROJECT>/lsq12/Blurred/NL_4_average_050_dxyz.mnc"
+nl_4_Avg_Mask_352_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352_dxyz.mnc"
+nl_4_Avg_Mask_176_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_176_dxyz.mnc"
+nl_4_Avg_Mask_098_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_098_dxyz.mnc"
+nl_4_Avg_Mask_078_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_078_dxyz.mnc"
+nl_4_Avg_Mask_064_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_064_dxyz.mnc"
+nl_4_Avg_Mask_050_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_050_dxyz.mnc"
+nl_4_Avg_352_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_352_dxyz.mnc"
+nl_4_Avg_176_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_176_dxyz.mnc"
+nl_4_Avg_098_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098_dxyz.mnc"
+nl_4_Avg_078_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_078_dxyz.mnc"
+nl_4_Avg_064_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_064_dxyz.mnc"
+nl_4_Avg_050_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_050_dxyz.mnc"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
