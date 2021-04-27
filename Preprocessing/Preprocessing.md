@@ -12,9 +12,9 @@ After downloading the MINC software, add it to your ~/.bashrc script (Linux) or 
 `nano ~/.bashrc` # scroll to the bottom and add ". /opt/minc/1.9.17/minc-toolkit-config.sh" to call the software in every new Terminal. Ctrl+X+X to save and exit.
 
 Begin by making a directory structure. This structure is important as you will probably want to replicate it on a 
-compute cluster for remote processing. Move to a /local/directory/of/choice and let \<PROJECT\> be your given project name. 
+compute cluster for remote processing. Move to /path/to/local/directory and let \<PROJECT\> be your given project name. 
 
-`cd /local/directory/of/choice`  
+`cd /path/to/local/directory`  
 
 `mkdir -p <PROJECT\>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
 
@@ -40,7 +40,7 @@ Each image .tag file must now be combined with the reference image .tag file to 
 
 `sed -i 's/.mnc//g' spec_list.txt`  
 
-`mv spec_list.txt <PROJECT>/Source`  
+`mv spec_list.txt /path/to/<PROJECT>/Source`  
 
 Use the Tag_Combine.R script (https://github.com/jaydevine/CranioMorph/blob/main/Preprocessing/Tag_Combine.R) to combine the initialization landmark files:
 
@@ -52,7 +52,7 @@ Let's move our original *_landmarks.tag files to a different directory, then use
 
 Move the two volume tag files and rename the .xfm files for simplicity:
 
-`mv *to*.tag <PROJECT>/Source/Tag`  
+`mv *to*.tag /path/to/<PROJECT>/Source/Tag`  
 
 `for file in *.xfm; do [ -f "$file" ] || continue; mv $file ${file//Tag_ref_to_}; done` # where ref is your reference name above. 
 
@@ -60,7 +60,7 @@ Use the .xfm matrices to resample the images. We can also include an intensity n
 
 `for file in *.xfm; do base=$(basename $file .xfm); echo $base; mincresample -like ${ref}.mnc -transformation $file ${base}.mnc ${base}_to_ref.mnc; nu_correct ${base}_to_ref.mnc ${base}_corr.mnc; mincnorm -out_floor 0 -out_ceil 1 ${base}_corr.mnc ${base}_norm.mnc; done`  
 
-After the resampling is done, clean up the directories. Move the original files to <PROJECT>/Source/Orig and the corrected *corr* files to \<PROJECT\>/Source/Corr. We want to use the *_norm.mnc images going forward. Most of the processing to come will require the original specimen names, so let's just rename:
+After the resampling is done, clean up the directories. Move the original files to /path/to/<PROJECT>/Source/Orig and the corrected *corr* files to /path/to/\<PROJECT\>/Source/Corr. We want to use the *_norm.mnc images going forward. Most of the processing to come will require the original specimen names, so let's just rename:
 
 `for file in *norm.mnc; do [ -f "$file" ] || continue; mv $file ${file//_norm}; done`  
 
