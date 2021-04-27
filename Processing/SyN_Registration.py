@@ -15,21 +15,21 @@
 import os
 import csv
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Some important notes:
-# 1) Your local and remote directories should match the compute cluster paths below. Replace <PROJECT> with your project name;
-# 2) Your local specimen list must be called test_list.txt (all test specimens).
-# 3) Your landmark initialized test images MUST be called $spec.mnc, where $spec is the exact name of the specimen annotated in spec_list.txt;
-# 4) The atlas files you intend to register/landmark your test images with must be called NL_4_average.mnc and NL_4_average_landmarks.tag. They must be
-# sftp'd into your remote /home/$USER/<PROJECT>/nl/MNC directory on the cluster.
-# 5) The mask and initialized source images must be sftp'd into your remote /home/$USER/<PROJECT>/Source/MNC directory on the cluster.
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# PLEASE READ! THE ONLY VARIABLES THAT NEED TO BE EDITED WITHIN THIS SCRIPT ARE BETWEEN THESE DASHED LINES.
+
+# 1) Your local and remote directories must be mapped correctly (i.e., the directories match the variables and "<PROJECT>" should be replaced with your project name);
+# 2) Let's assume your local specimen list is called spec_list.txt;
+# 3) Name your initialized source images $spec.mnc, where $spec is the exact name of the specimen annotated in spec_list.txt; 
+# 4) Let's assume your initial average and average mask are called LM_average.mnc and LM_average_mask.mnc, respectively;
+# 5) The initialized source images, average, and average mask must be sftp'd into your remote /path/to/<PROJECT>/Source/MNC directory on the cluster before any analyses can begin.
+
 # Define local working directory.
 os.chdir("/path/to/<PROJECT>/Scripts")
 # Define list of all specimens Here, spec_list.txt should be a list of all specimens you intend to register. 
 All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 
 # Create remote directory structure that matches your local structure. E.g.:
-# mkdir -p <PROJECT\>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
+# mkdir -p <PROJECT\>{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
 # Define remote directories (i.e., your compute cluster paths). We use the notation below because it is commonly seen in MINC.
 Scripts_path = "/path/to/<PROJECT>/Scripts/"
@@ -48,9 +48,8 @@ nl_XFM_path = "/path/to/<PROJECT>/nl/XFM/"
 nl_MNC_path = "/path/to/<PROJECT>/nl/MNC/"
 
 # Define average files.
-nl_4_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/NL_4_average.mnc"
-nl_4_Avg = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask.mnc"
-nl_4_Avg_LM = "/path/to/<PROJECT>/Source/MNC/NL_4_average_landmarks.tag"
+nl_4_Avg = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas.mnc"
+nl_4_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Mask.mnc"
 
 # Define blur files without "_blur" suffix.
 nl_4_Avg_Mask_352 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352"
