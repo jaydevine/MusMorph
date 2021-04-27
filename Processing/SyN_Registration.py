@@ -8,8 +8,6 @@
 # For instance, if you have 100 um image files, you would just scale the blurring values and the registration step values by a factor of 2. To execute these scripts, upload them to your remote
 # /path/to/<PROJECT>/Scripts directory, and run "sbatch Job_Submission_First.sh". 
 
-
-
 # Citation: Percival, C.J., Devine, J., Darwin, B.C., Liu, W., van Eede, M., Henkelman, R.M. and Hallgrimsson, B., 2019. The effect of automated landmark identification on morphometric analyses. J Anat (2019). https://doi.org/10.1111/joa.12973
 # Citation: Devine, J., Aponte, J.D., Katz, D.C. et al. A Registration and Deep Learning Approach to Automated Landmark Detection for Geometric Morphometrics. Evol Biol (2020). https://doi.org/10.1007/s11692-020-09508-8
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
