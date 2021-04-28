@@ -22,6 +22,7 @@ import csv
 # 3) Name your initialized source images $spec.mnc, where $spec is the exact name of the specimen annotated in spec_list.txt; 
 # 4) Let's assume your initial average and average mask are called LM_average.mnc and LM_average_mask.mnc, respectively;
 # 5) The initialized source images, average, and average mask must be sftp'd into your remote /path/to/<PROJECT>/Source/MNC directory on the cluster before any analyses can begin.
+# 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote /path/to/<PROJECT>/Scripts directory.
 
 # Define local working directory.
 os.chdir("/path/to/<PROJECT>/Scripts")
