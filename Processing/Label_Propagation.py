@@ -1,4 +1,4 @@
-# This is a Python script for validating and labelling initialized images, after registering them to an atlas. 
+# This is a Python script for validating and labelling initialized images after non-linearly registering them to an atlas. 
 # It will generate a series of Bash scripts that will resample the initialized image into the non-linear atlas space, 
 # compare the similarity of the two images, concatenate the registration transformation files, and propagate the labels 
 # to the initialized space using this concatenated transformation. 
