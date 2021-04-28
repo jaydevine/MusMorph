@@ -26,7 +26,7 @@ os.chdir("/path/to/<PROJECT>/Scripts")
 All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 
 # Create remote directory structure that matches your local structure. E.g.:
-# mkdir -p <PROJECT>{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
+# mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
 #---REMOTE---
 
