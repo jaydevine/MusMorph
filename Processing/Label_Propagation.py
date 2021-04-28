@@ -1,4 +1,7 @@
-# This is a Python script for validating and labelling initialized images, after registering them to an atlas. It will generate a series of Bash scripts that will resample the initialized image into the non-linear atlas space, compare the similarity of the two images, concatenate the registration transformation files, and propagate the labels to the initialized space using this concatenated transformation. 
+# This is a Python script for validating and labelling initialized images, after registering them to an atlas. 
+# It will generate a series of Bash scripts that will resample the initialized image into the non-linear atlas space, 
+# compare the similarity of the two images, concatenate the registration transformation files, and propagate the labels 
+# to the initialized space using this concatenated transformation. 
 
 # Any compute cluster can be used. To run these scripts, you must install the MINC Toolkit module onto the cluster beforehand, unless one already exists. You will notice here, for example, that we use a module called "minc/1.9.15", which is defined in the Bash header of every script via "module load minc/1.9.15". SLURM identifies the software on the cluster using this line. Other parameters you can play around with are time and memory. To execute these scripts, upload them to your remote /path/to/<PROJECT>/Scripts directory, and run "sbatch Job_Submission_First.sh". The landmark files will end up in /path/to/<PROJECT>/Source/Tag and the segmentations will end up in /path/to/<PROJECT>/Source/Resample. 
 
