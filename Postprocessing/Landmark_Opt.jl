@@ -138,7 +138,6 @@ Weights = params(Model);
 # For future reference, if we want to load the parameters back into our model:
 @load "/path/to/Landmarks/<>.bson" Model
 @load "/path/to/Landmarks/<>.bson" Weights
-#@load "All_Adults_Flux_Weights_RMSE_BE001.bson" Flux_Weights
 Flux.loadparams!(Model, Weights)
 
 # Evaluate the model on your test data.
