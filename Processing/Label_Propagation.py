@@ -121,7 +121,7 @@ for SpecID in Specimen_IDs:
 
 # Job_Submission_First
 Job_Submission_First = open("Job_Submission_First.sh",'a')
-Job_Submission_First.write("#!/bin/bash\n#SBATCH --partition=single\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=00:00:00\n#SBATCH --job-name=Job_Submission_First.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_First.write("#!/bin/bash\n#SBATCH --partition=single\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=10:00:00\n#SBATCH --job-name=Job_Submission_First.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_First.write("cd " + Scripts_path + "\n\n")
 Job_Submission_First.write("sleep 10\n\n")
 Job_Submission_First.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 1 " + str(Specimen_List_Length) + ")\n\n")
