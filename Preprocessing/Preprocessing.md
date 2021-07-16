@@ -18,11 +18,11 @@ compute cluster for remote processing. Move to /path/to/local/directory and let 
 
 `mkdir -p <PROJECT>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
 
-Next we want to convert our set of image volumes to .mnc. You can find conversion commands at http://bic-mni.github.io/man-pages/ and in our GitHub CranioMorph "Preprocessing" directory (https://github.com/jaydevine/CranioMorph/tree/main/Preprocessing). 
+Next we want to convert our set of image volumes to .mnc. You can find conversion commands at http://bic-mni.github.io/man-pages/ and in our GitHub MusMorph "Preprocessing" directory (https://github.com/jaydevine/MusMorph/tree/main/Preprocessing). 
 
 Let's place our converted .mnc files in /path/to/\<PROJECT\>/Source/MNC. 
   
-If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py). Skip to the end of this file to setup your cluster for the registrations.
+If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/MusMorph/blob/main/Processing/SyN_Registration.py). Skip to the end of this file to setup your cluster for the registrations.
 
 If your images were not scanned in a standard orientation, we need to manually initialize them. To do this, we need to render the image volumes as surfaces and roughly place >=4 landmarks to translate and rotate each image into a reference image space, where we have 1 to 1 voxel correspondences. An interesting way to do this is blur the image (e.g., mincblur -fwhm 0.3, where 0.3 is 300 microns or 10x our original resolution. This homogenizes the intensity profile), then loop through the blurred images and automatically generate a surface:  
 
@@ -42,7 +42,7 @@ Each image .tag file must now be combined with the reference image .tag file to 
 
 `mv spec_list.txt /path/to/<PROJECT>/Source`  
 
-Use the Tag_Combine.R script (https://github.com/jaydevine/CranioMorph/blob/main/Preprocessing/Tag_Combine.R) to combine the initialization landmark files:
+Use the Tag_Combine.R script (https://github.com/jaydevine/MusMorph/blob/main/Preprocessing/Tag_Combine.R) to combine the initialization landmark files:
 
 `Rscript Tag_Combine.R`  
 
@@ -94,6 +94,6 @@ In a separate Terminal, sftp to "put" the atlas/average, mask, and initialized .
 
 `put *.mnc`  
 
-Next, follow the non-linear registration Python script (https://github.com/jaydevine/CranioMorph/blob/main/Processing/SyN_Registration.py) to produce a set of Bash (.sh) scripts that will be ran on the cluster. There are Python scripts for pairwise registration (if you've already created/have an atlas) and atlas construction. 
+Next, follow the non-linear registration Python script (https://github.com/jaydevine/MusMorph/blob/main/Processing/LoRes_Pairwise.py or https://github.com/jaydevine/MusMorph/blob/main/Processing/HiRes_Pairwise.py) to produce a set of Bash (.sh) scripts that will be ran on the cluster. There are Python scripts for pairwise registration (if you've already created/have an atlas) and atlas construction. 
 
 #------------------------------------------------------------------------------------------------------------------------

@@ -2,62 +2,62 @@
 
 # Dependencies required: MINC Toolkit (https://bic-mni.github.io/ or https://github.com/BIC-MNI/minc-toolkit-v2) and the dos2unix Bash package.
 
-# Create a variable called filename that calls upon a .txt file of specimen names. 
-filename="/path/to/<spec_list.txt>" 
+# Create a variable called FILENAME that calls upon a .txt file of specimen names. 
+FILENAME="/path/to/<spec_list.txt>" 
 # Invoke the montage command to produce an output .png containing images of the newly created .mnc files. 
-montage_cmd="montage -geometry +2+2"
-# Start a while loop to read your filename line by line. 
+MONTAGE_CMD="montage -geometry +2+2"
+# Start a while loop to read your FILENAME line by line. 
 while read -r line
 do
-	# The 'name' variable becomes each line within filename. 
-	name="$line"
+	# The 'SpecID' variable becomes each line within FILENAME. 
+	SpecID="$line"
 	cd "/path/to/aim"
-	echo "Working on $name at /path/to/aim"
-	# txtfile and aimfile use the variable $name, or the line, to define the text and aim files. Thus, each specimen in filename should not have a suffix. 
-	txtfile="$name.txt"
-	aimfile="$name.aim"
-	# The new .mnc file is sent to /path/to/aim and is given the name $name.mnc. 
-	mncfile="/path/to/aim/$name.mnc"	
+	echo "Working on $SpecID at /path/to/aim"
+	# TXTFILE and AIMFILE use the variable $SpecID, or the line, to define the text and aim files. Thus, each specimen in FILENAME should not have a suffix. 
+	TXTFILE="$SpecID.txt"
+	AIMFILE="$SpecID.aim"
+	# The new .mnc file is sent to /path/to/aim and is given the SpecID $SpecID.mnc. 
+	MNCFILE="/path/to/aim/$SpecID.mnc"	
 	# Change the .txt header to UNIX format, then use information within the header to automatically produce .mnc files. 
-	dos2unix $txtfile				
+	dos2unix $TXTFILE				
 	# Search for offset.
-	offset_line=`cat $txtfile | grep offset`
-	# Code the offset line as arr_off.		
-	arr_off=($offset_line)
-	# Extract the offset value from the arr_off variable. Note that arr_off[6] may SLIGHTLY differ between studies based on the header information.
-	act_offset=${arr_off[6]:0:4}	
+	OFFSET_LINE=`cat $TXTFILE | grep offset`
+	# Code the offset line as ARR_OFF.		
+	ARR_OFF=($OFFSET_LINE)
+	# Extract the offset value from the ARR_OFF variable. Note that ARR_OFF[6] may SLIGHTLY differ between studies based on the header information.
+	ACT_OFFSET=${ARR_OFF[6]:0:4}	
 	# Search for dim. 
-	dimensions=`cat $txtfile | grep -m 1 dim`
-	# Code the dim variable as arr_dim
-	arr_dim=($dimensions)
-	# Extract the x, y, z dimensions from arr_dim. Note that arr_dim[1], arr_dim[2], and arr_dim[3] may also SLIGHTLY differ between studies based on the header information. 
-	act_x=${arr_dim[1]}
-	act_y=${arr_dim[2]}
-	act_z=${arr_dim[3]}
-	# Search for element (i.e., resolution). 
-	resolution=`cat $txtfile | grep element`
-	# Code the element line as arr_res.
-	arr_res=($resolution)
-	# Extract the x, y, z resolution.
-	res_x=${arr_res[4]}
-	res_y=${arr_res[5]}
-	res_z=${arr_res[6]}
+	DIMENSIONS=`cat $TXTFILE | grep -m 1 dim`
+	# Code the dim variable as ARR_DIM
+	ARR_DIM=($DIMENSIONS)
+	# Extract the x, y, z DIMENSIONS from ARR_DIM. Note that ARR_DIM[1], ARR_DIM[2], and ARR_DIM[3] may also SLIGHTLY differ between studies based on the header information. 
+	ACT_X=${ARR_DIM[1]}
+	ACT_Y=${ARR_DIM[2]}
+	ACT_Z=${ARR_DIM[3]}
+	# Search for element (i.e., RESOLUTION). 
+	RESOLUTION=`cat $TXTFILE | grep element`
+	# Code the element line as ARR_RES.
+	ARR_RES=($RESOLUTION)
+	# Extract the x, y, z RESOLUTION.
+	RES_X=${ARR_RES[4]}
+	RES_Y=${ARR_RES[5]}
+	RES_Z=${ARR_RES[6]}
 	# Use the parameters defined above to convert the raw data into a .mnc file.
-	rawtominc -input $aimfile -short -scan_range -clobber -skip $act_offset -xstep $res_x -ystep $res_y -zstep $res_z -origin 0 0 0 $mncfile $act_z $act_y $act_x
-	echo "rawtominc -input "$name.aim" -short -scan_range -clobber -skip $act_offset -xstep $res_x -ystep $res_y -zstep $res_z -origin 0 0 0 "$name.mnc" $act_z $act_y $act_x"
+	rawtominc -input $AIMFILE -short -scan_range -clobber -skip $ACT_OFFSET -xstep $RES_X -ystep $RES_Y -zstep $RES_Z -origin 0 0 0 $MNCFILE $ACT_Z $ACT_Y $ACT_X
+	echo "rawtominc -input "$SpecID.aim" -short -scan_range -clobber -skip $ACT_OFFSET -xstep $RES_X -ystep $RES_Y -zstep $RES_Z -origin 0 0 0 "$SpecID.mnc" $ACT_Z $ACT_Y $ACT_X"
 	# Create the montage image for all newly created .mnc files.
 	cd "/path/to/aim"		
 	qcpost="_QC.png"	
-	qcfile="$name$qcpost"	
+	qcfile="$SpecID$qcpost"	
 	labpost="_QC_labeled.png"
-	labfile="$name$labpost"	
-	mincpik -clobber -scale 20 -triplanar "$name.mnc" "$qcfile"
-	convert -label $name "$qcfile" "$labfile"
+	labfile="$SpecID$labpost"	
+	mincpik -clobber -scale 20 -triplanar "$SpecID.mnc" "$qcfile"
+	convert -label $SpecID "$qcfile" "$labfile"
 
-	montage_cmd+=" /path/to/aim/$labfile"		#Build full montage command
-	echo $montage_cmd
+	MONTAGE_CMD+=" /path/to/aim/$labfile"		#Build full montage command
+	echo $MONTAGE_CMD
 
-done < "$filename"
+done < "$FILENAME"
 # Create a montage of the converted images. 
-montage_cmd+=" /path/to/aim/<montage.png>"
-$montage_cmd 
+MONTAGE_CMD+=" /path/to/aim/<montage.png>"
+$MONTAGE_CMD 

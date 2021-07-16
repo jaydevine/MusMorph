@@ -4,24 +4,21 @@
 
 # This script converts a single volume .tiff file into a .mnc file.
 
-# Create a .txt file, say spec_list.txt, with the specimen names in the first column and the original image resolutions in the second column. Use a space to delimit columns.
-filename="/path/to/TIFF/<spec_list.txt>"
+# Create a .txt file with the specimen names in the first column and the original image resolutions in the second column. Use a space to delimit columns.
+FILENAME="/path/to/TIFF/<spec_list.txt>"
 
 while read -r line
 do
 	cd "/path/to/TIFF"
-	echo "Working on $spec at /path/to/TIFF"
-	# The 'name' variable becomes each line within filename.
-	name=( $line )
-	echo $name
-	spec=${name[0]}
-	echo $spec
-	res=${name[1]}
-	echo $res
+	# The 'VAR' variable becomes each line within FILENAME.
+	VAR=( $line )
+	SpecID=${VAR[0]}
+	echo "Working on $SpecID at /path/to/TIFF"
+	RES=${VAR[1]}
+	echo $RES
 	# Define extensions.
-	tiff=".tiff"
-	mnc=".mnc"
+	TIFF=".tiff"
+	MNC=".mnc"
 	# Run command.
-	itk_convert "$spec$tiff" "$spec$mnc"; minc_modify_header -dinsert xspace:step=$res "$spec$mnc"; minc_modify_header -dinsert yspace:step=$res "$spec$mnc"; minc_modify_header -dinsert zspace:step=$res "$spec$mnc"
-
-done < "$filename"
+	itk_convert "$SpecID$TIFF" "$SpecID$MNC"; minc_modify_header -dinsert xspace:step=$RES "$SpecID$MNC"; minc_modify_header -dinsert yspace:step=$RES "$SpecID$MNC"; minc_modify_header -dinsert zspace:step=$RES "$SpecID$MNC"
+done < "$FILENAME"
