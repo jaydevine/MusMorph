@@ -51,17 +51,16 @@ nl_XFM_path = "/path/to/<PROJECT>/nl/XFM/"
 nl_MNC_path = "/path/to/<PROJECT>/nl/MNC/"
 
 # Define atlas file and mask. 
-nl_4_Avg = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas.mnc"
-nl_4_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Mask.mnc"
+nl_4_Avg = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas.mnc"
+nl_4_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas_Mask.mnc"
 
 # Define atlas landmarks. 
-nl_4_Avg_LM = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Cranium.tag"
-nl_4_Avg_Endo_LM = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Endocast.tag"
-nl_4_Avg_Mand_LM = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Mandible.tag"
+nl_4_Avg_LM = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Cranium_Atlas_Landmarks.tag"
+nl_4_Avg_Endo_LM = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Endocast_Atlas_Landmarks.tag"
+nl_4_Avg_Mand_LM = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Mandible_Atlas_Landmarks.tag"
 
 # Define atlas segmentations. 
-nl_4_Avg_Segs = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Segs.mnc"
-
+nl_4_Avg_Segs = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas_Segs.mnc"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
