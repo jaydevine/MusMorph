@@ -1,0 +1,19 @@
+# Permanent
+.Rproj.user
+.DS_Store
+Postprocessing/.DS_Store
+Postprocessing/data/.DS_Store
+Postprocessing/data/atlas/.DS_Store
+
+# Temporary
+MusMorph.Rproj
+Postprocessing/Plot_LM_Meshes_atlas.R
+Postprocessing/Sliding_LM.R
+Postprocessing/data/atlas/Calgary_Adult_Cranium_Atlas_Landmarks.tag
+Postprocessing/data/atlas/Calgary_Adult_Cranium_Atlas_Sparse_Landmarks.tag
+Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas.ply
+Postprocessing/data/atlas/Calgary_Adult_Mandible_Atlas_Landmarks.tag
+Postprocessing/data/atlas/Calgary_Adult_Skull_Atlas.ply
+Postprocessing/data/atlas/Global_Adult_ONLY_Mandible_Atlas_lowres.ply
+Postprocessing/data/atlas/Global_Adult_ONLY_Skull_Atlas_lowres.ply
+Postprocessing/sliding_semis_skull.R

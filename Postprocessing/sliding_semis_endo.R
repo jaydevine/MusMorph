@@ -1,19 +1,24 @@
 #### 0. Load R packages ####
 library(rgl)
-library(Morpho) 
 library(geomorph)
 library(devtools)
 install_github("marta-vidalgarcia/morpho.tools.GM")
 library(morpho.tools.GM)
+library(Rvcg)
 
 #### 1. Load data ####
-endo_mesh <- geomorph::read.ply("./Postprocessing/data/atlas/Global_Adult_Endocast-inMINCSpace-Label.ply")
+# endo_mesh <- geomorph::read.ply("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas.ply")
+# endo_lowres <- vcgQEdecim(endo_mesh, percent = 0.125)
+# rgl::open3d(windowRect = c(20, 30, 800, 800))
+# rgl::shade3d(endo_lowres, color="gray", alpha=1)
+# writePLY("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_lowres.ply")
 
-atlas_endo_lm <- morpho.tools.GM::tag2lm("./Postprocessing/data/atlas/Global_endocast_landmarks.tag")
+endo_mesh <- geomorph::read.ply("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_lowres.ply")
 
+atlas_endo_lm <- morpho.tools.GM::tag2lm("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_Landmarks.tag")
 
 # Divide the data into type of landmark
-LM_type_endo <- suppressWarnings(read.table(file = "./Postprocessing/data/atlas/Global_endocast_landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
+LM_type_endo <- suppressWarnings(read.table(file = "./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_Landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
 levels(as.factor(LM_type_endo))
 vec_LM_endo <- which(LM_type_endo == "LANDMARK")
 vec_curve_endo <- which(LM_type_endo == "curve_semilandmark")
@@ -32,7 +37,17 @@ rgl::plot3d(atlas_endo_lm[ENDO_fixed.lm,], aspect="iso", type="s", size=1, col="
 rgl::plot3d(atlas_endo_lm[ENDO_curves.lm,], aspect="iso", type="s", size=0.9, col="green", add=T)
 rgl::plot3d(atlas_endo_lm[87:108,], aspect="iso", type="s", size=0.8, col="black", add=T)
 rgl::plot3d(atlas_endo_lm[ENDO_surface.lm,], aspect="iso", type="s", size=0.6, col="blue", add=T)
+rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_lateral.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_dorsal.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_ventral.png", top = TRUE)
 rgl::rgl.close()
+
+# Lateral view
+open3d(zoom = 0.75, userMatrix = lateral, windowRect = c(0, 0, 1000, 700)) 
+shade3d(skull_mesh, color = "gray", alpha = 0.8)
+plot3d(atlas_lm, aspect = 'iso', type = 's', size = 1.1, col = 'darkblue', add = TRUE)
+
+rgl.close()
 
 
 #### 3. Sliding the curve semi-landmarks ####
