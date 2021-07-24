@@ -16,3 +16,6 @@ Postprocessing/data/atlas/Calgary_Adult_Skull_Atlas.ply
 Postprocessing/data/atlas/Global_Adult_ONLY_Mandible_Atlas_lowres.ply
 Postprocessing/data/atlas/Global_Adult_ONLY_Skull_Atlas_lowres.ply
 Postprocessing/sliding_semis_skull.R
+Postprocessing/Preprocessing_mandible_LMs.R
+Postprocessing/data/atlas/mand_semis/
+Preprocessing/DICOM_to_MNC.sh

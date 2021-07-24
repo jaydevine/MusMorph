@@ -32,8 +32,15 @@ ENDO_surface.lm <- vec_surf_endo
 #### 2. Plotting ####
 # Plot the mesh with the landmarks, curve semi-landmarks, and surface semi-landmarks
 rgl::open3d(windowRect = c(20, 30, 800, 800))
-rgl::shade3d(endo_mesh, color="gray", alpha=1)
+# rgl.pop("lights")
+# light3d(specular="black")
+rgl::shade3d(endo_mesh, color="gray", alpha =0.9)
 rgl::plot3d(atlas_endo_lm[ENDO_fixed.lm,], aspect="iso", type="s", size=1, col="red", add=T)
+# rgl::text3d(x = atlas_endo_lm[ENDO_fixed.lm, 1], 
+#             y = atlas_endo_lm[ENDO_fixed.lm, 2], 
+#             z=  atlas_endo_lm[ENDO_fixed.lm, 3], 
+#             texts = row.names(atlas_endo_lm[ENDO_fixed.lm, ]), 
+#             cex = 2.5, offset = 0.5, pos = 3)
 rgl::plot3d(atlas_endo_lm[ENDO_curves.lm,], aspect="iso", type="s", size=0.9, col="green", add=T)
 rgl::plot3d(atlas_endo_lm[87:108,], aspect="iso", type="s", size=0.8, col="black", add=T)
 rgl::plot3d(atlas_endo_lm[ENDO_surface.lm,], aspect="iso", type="s", size=0.6, col="blue", add=T)
@@ -41,13 +48,6 @@ rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_lateral.png", top = TRUE)
 rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_dorsal.png", top = TRUE)
 rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_ventral.png", top = TRUE)
 rgl::rgl.close()
-
-# Lateral view
-open3d(zoom = 0.75, userMatrix = lateral, windowRect = c(0, 0, 1000, 700)) 
-shade3d(skull_mesh, color = "gray", alpha = 0.8)
-plot3d(atlas_lm, aspect = 'iso', type = 's', size = 1.1, col = 'darkblue', add = TRUE)
-
-rgl.close()
 
 
 #### 3. Sliding the curve semi-landmarks ####
@@ -122,8 +122,8 @@ curveslide_13 <- cbind(curve13_left, ENDO_curve13, curve13_right)
 
 # all our curveslide matrices
 ls(pattern="curveslide*")
-curveslide_list <- lapply(list(ls(pattern="curveslide*")), get)
-curveslide_all <- do.call(rbind, curveslide_list)
+curveslide_list <- lapply(ls(pattern="curveslide*"), get)
+curveslide_all <- do.call(rbind, curveslide_list[1:18])
 
 write.csv(curveslide_all, "./Postprocessing/output/curveslide_endocast.csv")
 
