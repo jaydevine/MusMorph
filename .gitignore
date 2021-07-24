@@ -12,7 +12,6 @@ Postprocessing/Sliding_LM.R
 Postprocessing/data/atlas/Calgary_Adult_Cranium_Atlas_Landmarks.tag
 Postprocessing/data/atlas/Calgary_Adult_Cranium_Atlas_Sparse_Landmarks.tag
 Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas.ply
-Postprocessing/data/atlas/Calgary_Adult_Mandible_Atlas_Landmarks.tag
 Postprocessing/data/atlas/Calgary_Adult_Skull_Atlas.ply
 Postprocessing/data/atlas/Global_Adult_ONLY_Mandible_Atlas_lowres.ply
 Postprocessing/data/atlas/Global_Adult_ONLY_Skull_Atlas_lowres.ply
