@@ -24,6 +24,8 @@ import csv
 # 5) The initialized source images, average, and average mask must be sftp'd into your remote /path/to/<PROJECT>/Source/MNC directory on the cluster before any analyses can begin.
 # 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote /path/to/<PROJECT>/Scripts directory.
 
+# LOCAL:
+
 # Define local working directory.
 os.chdir("/path/to/<PROJECT>/Scripts")
 # Define list of all specimens Here, spec_list.txt should be a list of all specimens you intend to register. 
@@ -31,6 +33,8 @@ All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 
 # Create remote directory structure that matches your local structure. E.g.:
 # mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
+
+# REMOTE:
 
 # Define remote compute cluster paths.
 Scripts_path = "/path/to/<PROJECT>/Scripts/"
@@ -48,52 +52,52 @@ nl_Blurred_path = "/path/to/<PROJECT>/nl/Blurred/"
 nl_XFM_path = "/path/to/<PROJECT>/nl/XFM/"
 nl_MNC_path = "/path/to/<PROJECT>/nl/MNC/"
 
-# Define average files.
-nl_4_Avg = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas.mnc"
-nl_4_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/Global_Adult_Skull_Atlas_Mask.mnc"
+# Define average files (e.g., for the adults):
+Atlas_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas_Mask.mnc"
+Atlas_Avg = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas.mnc"
 
 # Define blur files without "_blur" suffix.
-nl_4_Avg_Mask_352 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352"
-nl_4_Avg_Mask_176 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_176"
-nl_4_Avg_Mask_098 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_098"
-nl_4_Avg_Mask_078 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_078"
-nl_4_Avg_Mask_064 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_064"
-nl_4_Avg_Mask_050 = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_050"
-nl_4_Avg_352 = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_352"
-nl_4_Avg_176 = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_176"
-nl_4_Avg_098 = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098"
-nl_4_Avg_078 = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_078"
-nl_4_Avg_064 = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_064"
-nl_4_Avg_050 = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_050"
+Atlas_Avg_Mask_352 = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_352"
+Atlas_Avg_Mask_176 = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_176"
+Atlas_Avg_Mask_098 = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_098"
+Atlas_Avg_Mask_078 = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_078"
+Atlas_Avg_Mask_064 = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_064"
+Atlas_Avg_Mask_050 = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_050"
+Atlas_Avg_352 = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_352"
+Atlas_Avg_176 = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_176"
+Atlas_Avg_098 = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_098"
+Atlas_Avg_078 = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_078"
+Atlas_Avg_064 = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_064"
+Atlas_Avg_050 = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_050"
 
 # Define blur files with "_blur" suffix.
-nl_4_Avg_Mask_352_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352_blur.mnc"
-nl_4_Avg_Mask_176_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_176_blur.mnc"
-nl_4_Avg_Mask_098_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_098_blur.mnc"
-nl_4_Avg_Mask_078_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_078_blur.mnc"
-nl_4_Avg_Mask_064_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_064_blur.mnc"
-nl_4_Avg_Mask_050_Blur = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_050_blur.mnc"
-nl_4_Avg_352_Blur = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_352_blur.mnc"
-nl_4_Avg_176_Blur = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_176_blur.mnc"
-nl_4_Avg_098_Blur = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098_blur.mnc"
-nl_4_Avg_098_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098_dxyz.mnc"
-nl_4_Avg_078_Blur = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_078_blur.mnc"
-nl_4_Avg_064_Blur = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_064_blur.mnc"
-nl_4_Avg_050_Blur = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_050_blur.mnc"
+Atlas_Avg_Mask_352_Blur = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_352_blur.mnc"
+Atlas_Avg_Mask_176_Blur = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_176_blur.mnc"
+Atlas_Avg_Mask_098_Blur = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_098_blur.mnc"
+Atlas_Avg_Mask_078_Blur = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_078_blur.mnc"
+Atlas_Avg_Mask_064_Blur = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_064_blur.mnc"
+Atlas_Avg_Mask_050_Blur = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_050_blur.mnc"
+Atlas_Avg_352_Blur = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_352_blur.mnc"
+Atlas_Avg_176_Blur = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_176_blur.mnc"
+Atlas_Avg_098_Blur = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_098_blur.mnc"
+Atlas_Avg_098_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_098_dxyz.mnc"
+Atlas_Avg_078_Blur = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_078_blur.mnc"
+Atlas_Avg_064_Blur = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_064_blur.mnc"
+Atlas_Avg_050_Blur = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_050_blur.mnc"
 
 # Define blur files with "dxyz" suffix.
-nl_4_Avg_Mask_352_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_352_dxyz.mnc"
-nl_4_Avg_Mask_176_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_176_dxyz.mnc"
-nl_4_Avg_Mask_098_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_098_dxyz.mnc"
-nl_4_Avg_Mask_078_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_078_dxyz.mnc"
-nl_4_Avg_Mask_064_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_064_dxyz.mnc"
-nl_4_Avg_Mask_050_Dxyz = "/path/to/<PROJECT>/Source/MNC/NL_4_average_mask_050_dxyz.mnc"
-nl_4_Avg_352_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_352_dxyz.mnc"
-nl_4_Avg_176_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_176_dxyz.mnc"
-nl_4_Avg_098_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_098_dxyz.mnc"
-nl_4_Avg_078_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/NL_4_average_078_dxyz.mnc"
-nl_4_Avg_064_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_064_dxyz.mnc"
-nl_4_Avg_050_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/NL_4_average_050_dxyz.mnc"
+Atlas_Avg_Mask_352_Dxyz = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_352_dxyz.mnc"
+Atlas_Avg_Mask_176_Dxyz = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_176_dxyz.mnc"
+Atlas_Avg_Mask_098_Dxyz = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_098_dxyz.mnc"
+Atlas_Avg_Mask_078_Dxyz = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_078_dxyz.mnc"
+Atlas_Avg_Mask_064_Dxyz = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_064_dxyz.mnc"
+Atlas_Avg_Mask_050_Dxyz = "/path/to/<PROJECT>/Source/MNC/Atlas_average_mask_050_dxyz.mnc"
+Atlas_Avg_352_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_352_dxyz.mnc"
+Atlas_Avg_176_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_176_dxyz.mnc"
+Atlas_Avg_098_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_098_dxyz.mnc"
+Atlas_Avg_078_Dxyz = "/path/to/<PROJECT>/lsq6/Blurred/Atlas_average_078_dxyz.mnc"
+Atlas_Avg_064_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_064_dxyz.mnc"
+Atlas_Avg_050_Dxyz = "/path/to/<PROJECT>/lsq12/Blurred/Atlas_average_050_dxyz.mnc"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -137,19 +141,19 @@ lsq12_Register_050_Blur = "minctracc -clobber -xcorr -lsq12 -w_translations 0.4 
 Atlas_Blur = open("Atlas_Blur.sh",'a')
 # Write standard .sh header. This header is needed for SLURM job submission.
 Atlas_Blur.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=15000M\n#SBATCH --time=07:00:00\n\nmodule load minc/1.9.15\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
-# Write commands to blur the atlas file and NL_4_average_mask with isotropic blurring kernels. These blur values should be decided upon with respect to the original resolution of the image. Here, we're assuming 35 micron resolution.
-Atlas_Blur.write(MNC_Blur + "0.352 " + nl_4_Avg + " " + nl_4_Avg_352 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.176 " + nl_4_Avg + " " + nl_4_Avg_176 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.098 " + nl_4_Avg + " " + nl_4_Avg_098 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.078 " + nl_4_Avg + " " + nl_4_Avg_078 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.064 " + nl_4_Avg + " " + nl_4_Avg_064 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.050 " + nl_4_Avg + " " + nl_4_Avg_050 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.352 " + nl_4_Avg_Mask + " " + nl_4_Avg_Mask_352 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.176 " + nl_4_Avg_Mask + " " + nl_4_Avg_Mask_176 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.098 " + nl_4_Avg_Mask + " " + nl_4_Avg_Mask_098 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.078 " + nl_4_Avg_Mask + " " + nl_4_Avg_Mask_078 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.064 " + nl_4_Avg_Mask + " " + nl_4_Avg_Mask_064 + "\n")
-Atlas_Blur.write(MNC_Blur + "0.050 " + nl_4_Avg_Mask + " " + nl_4_Avg_Mask_050 + "\n")
+# Write commands to blur the atlas file and Atlas_average_mask with isotropic blurring kernels. These blur values should be decided upon with respect to the original resolution of the image. Here, we're assuming 35 micron resolution.
+Atlas_Blur.write(MNC_Blur + "0.352 " + Atlas_Avg + " " + Atlas_Avg_352 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.176 " + Atlas_Avg + " " + Atlas_Avg_176 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.098 " + Atlas_Avg + " " + Atlas_Avg_098 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.078 " + Atlas_Avg + " " + Atlas_Avg_078 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.064 " + Atlas_Avg + " " + Atlas_Avg_064 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.050 " + Atlas_Avg + " " + Atlas_Avg_050 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.352 " + Atlas_Avg_Mask + " " + Atlas_Avg_Mask_352 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.176 " + Atlas_Avg_Mask + " " + Atlas_Avg_Mask_176 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.098 " + Atlas_Avg_Mask + " " + Atlas_Avg_Mask_098 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.078 " + Atlas_Avg_Mask + " " + Atlas_Avg_Mask_078 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.064 " + Atlas_Avg_Mask + " " + Atlas_Avg_Mask_064 + "\n")
+Atlas_Blur.write(MNC_Blur + "0.050 " + Atlas_Avg_Mask + " " + Atlas_Avg_Mask_050 + "\n")
 Atlas_Blur.write("echo \"The job ended at $(date).\"")
 # Close the file.
 Atlas_Blur.close()
@@ -175,11 +179,11 @@ for SpecID in Specimen_IDs:
 	lsq6_Query.write(MNC_Blur + "0.176 " + Source_MNC_path + SpecID + ".mnc " + lsq6_Blurred_path + SpecID + "_176\n")
 	lsq6_Query.write(MNC_Blur + "0.078 " + Source_MNC_path + SpecID + ".mnc " + lsq6_Blurred_path + SpecID + "_078\n")
 	# Call registration strings. We begin with the most blurred (e.g., 0.352) image. -model_mask specifies the mask we wish to use. Note that we use a mask with the same amount of blurring; -identity specifies an identity matrix that initializes the transformation matrix. Upon specifying a transformation matrix, we extract the relevant transformation parameters (here, rotation and translation) and optimize them to find the best transformation; -transformation specifies a file giving a previous source to target mapping, which is used as the new coordinate starting point for the optimization.
-	lsq6_Query.write(lsq6_Register_352_Blur + lsq6_Blurred_path + SpecID + "_352_blur.mnc " + nl_4_Avg_352_Blur + " " + lsq6_XFM_path + SpecID + "_lsq6_0.xfm -model_mask " + nl_4_Avg_Mask_352_Blur + " -identity\n")
-	lsq6_Query.write(lsq6_Register_176_Blur + lsq6_Blurred_path + SpecID + "_176_blur.mnc " + nl_4_Avg_176_Blur + " " + lsq6_XFM_path + SpecID + "_lsq6_1.xfm -model_mask " + nl_4_Avg_Mask_176_Blur + " -transformation " + lsq6_XFM_path + SpecID + "_lsq6_0.xfm\n")
-	lsq6_Query.write(lsq6_Register_078_Blur + lsq6_Blurred_path + SpecID + "_078_blur.mnc " + nl_4_Avg_078_Blur + " " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm -model_mask " + nl_4_Avg_Mask_078_Blur + " -transformation " + lsq6_XFM_path + SpecID + "_lsq6_1.xfm\n")
+	lsq6_Query.write(lsq6_Register_352_Blur + lsq6_Blurred_path + SpecID + "_352_blur.mnc " + Atlas_Avg_352_Blur + " " + lsq6_XFM_path + SpecID + "_lsq6_0.xfm -model_mask " + Atlas_Avg_Mask_352_Blur + " -identity\n")
+	lsq6_Query.write(lsq6_Register_176_Blur + lsq6_Blurred_path + SpecID + "_176_blur.mnc " + Atlas_Avg_176_Blur + " " + lsq6_XFM_path + SpecID + "_lsq6_1.xfm -model_mask " + Atlas_Avg_Mask_176_Blur + " -transformation " + lsq6_XFM_path + SpecID + "_lsq6_0.xfm\n")
+	lsq6_Query.write(lsq6_Register_078_Blur + lsq6_Blurred_path + SpecID + "_078_blur.mnc " + Atlas_Avg_078_Blur + " " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm -model_mask " + Atlas_Avg_Mask_078_Blur + " -transformation " + lsq6_XFM_path + SpecID + "_lsq6_1.xfm\n")
 	# Resample the original image into the rotation and translation invariant space using the concatenated transformation. Be mindful of your "original" images and their naming convention.
-	lsq6_Query.write("mincresample -like " + nl_4_Avg + " -clobber -transformation " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm " + Source_MNC_path + SpecID + ".mnc " + lsq6_MNC_path + SpecID + "_lsq6.mnc\n\n")
+	lsq6_Query.write("mincresample -like " + Atlas_Avg + " -clobber -transformation " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm " + Source_MNC_path + SpecID + ".mnc " + lsq6_MNC_path + SpecID + "_lsq6.mnc\n\n")
 	lsq6_Query.write("echo \"The job ended at $(date).\"")
 	# Close the 6-parameter blur/register file.
 	lsq6_Query.close()
@@ -206,13 +210,13 @@ for SpecID in Specimen_IDs:
 	lsq12_Query.write(MNC_Blur + "0.064 " + lsq6_MNC_path + SpecID + "_lsq6.mnc " + lsq12_Blurred_path + SpecID + "_064\n")
 	lsq12_Query.write(MNC_Blur + "0.050 " + lsq6_MNC_path + SpecID + "_lsq6.mnc " + lsq12_Blurred_path + SpecID + "_050\n")
 	# Call registration strings. We begin with the most blurred (e.g., 0.352) image. -model_mask specifies the mask we wish to use. Note that we use a mask with the same amount of blurring; -identity specifies an identity matrix that initializes the transformation matrix. Upon specifying a transformation matrix, we extract the relevant transformation parameters (here, rotation and translation) and optimize them to find the best transformation; -transformation specifies a file giving a previous source to target mapping, which is used as the new coordinate starting point for the optimization.
-	lsq12_Query.write(lsq12_Register_098_Blur + lsq12_Blurred_path + SpecID + "_098_blur.mnc " + nl_4_Avg_098_Blur + " " + lsq12_XFM_path + SpecID + "_lsq12_0.xfm -model_mask " + nl_4_Avg_Mask_098_Blur + " -identity\n")
-	lsq12_Query.write(lsq12_Register_064_Blur + lsq12_Blurred_path + SpecID + "_064_blur.mnc " + nl_4_Avg_064_Blur + " " + lsq12_XFM_path + SpecID + "_lsq12_1.xfm -model_mask " + nl_4_Avg_Mask_064_Blur + " -transformation " + lsq12_XFM_path + SpecID + "_lsq12_0.xfm\n")
-	lsq12_Query.write(lsq12_Register_050_Blur + lsq12_Blurred_path + SpecID + "_050_blur.mnc " + nl_4_Avg_050_Blur + " " + lsq12_XFM_path + SpecID + "_lsq12_2.xfm -model_mask " + nl_4_Avg_Mask_050_Blur + " -transformation " + lsq12_XFM_path + SpecID + "_lsq12_1.xfm\n")
+	lsq12_Query.write(lsq12_Register_098_Blur + lsq12_Blurred_path + SpecID + "_098_blur.mnc " + Atlas_Avg_098_Blur + " " + lsq12_XFM_path + SpecID + "_lsq12_0.xfm -model_mask " + Atlas_Avg_Mask_098_Blur + " -identity\n")
+	lsq12_Query.write(lsq12_Register_064_Blur + lsq12_Blurred_path + SpecID + "_064_blur.mnc " + Atlas_Avg_064_Blur + " " + lsq12_XFM_path + SpecID + "_lsq12_1.xfm -model_mask " + Atlas_Avg_Mask_064_Blur + " -transformation " + lsq12_XFM_path + SpecID + "_lsq12_0.xfm\n")
+	lsq12_Query.write(lsq12_Register_050_Blur + lsq12_Blurred_path + SpecID + "_050_blur.mnc " + Atlas_Avg_050_Blur + " " + lsq12_XFM_path + SpecID + "_lsq12_2.xfm -model_mask " + Atlas_Avg_Mask_050_Blur + " -transformation " + lsq12_XFM_path + SpecID + "_lsq12_1.xfm\n")
 	# Concatenate .xfm files.
 	lsq12_Query.write("xfmconcat -clobber " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm " + lsq12_XFM_path + SpecID + "_lsq12_2.xfm " + lsq12_XFM_path + SpecID + "_origtolsq12.xfm\n")
 	# Resample the original image into the rotation and translation invariant space using the concatenated transformation. Be mindful of your "original" images and their naming convention.
-	lsq12_Query.write("mincresample -like " + nl_4_Avg + " -clobber -transformation " + lsq12_XFM_path + SpecID + "_origtolsq12.xfm " + Source_MNC_path + SpecID + ".mnc " + lsq12_MNC_path + SpecID + "_lsq12.mnc\n\n")
+	lsq12_Query.write("mincresample -like " + Atlas_Avg + " -clobber -transformation " + lsq12_XFM_path + SpecID + "_origtolsq12.xfm " + Source_MNC_path + SpecID + ".mnc " + lsq12_MNC_path + SpecID + "_lsq12.mnc\n\n")
 	lsq12_Query.write("echo \"The job ended at $(date).\"")
 	# Close the 12-parameter blur/register file.
 	lsq12_Query.close()
@@ -235,12 +239,7 @@ for SpecID in Specimen_IDs:
 	# Blur each lsq12 image with a 0.098 isotropic Gaussian blurring kernel. These blur values should be decided upon with respect to the original resolution of the image.
 	nl_Query.write(MNC_Blur + "0.098 " + lsq12_MNC_path + SpecID + "_lsq12.mnc " + nl_Blurred_path + SpecID + "_098\n")
 	# Call the ANTS registration string. -m is the similarity metric (CC is cross-correlation); -x is the mask; -t is the transformation model (SyN is SymmetricNormalization, and is a diffeomorphic transformation); -r is the regularization model (Gaussian); -i is the number of iterations and number of resolution levels; -o is the output transformation.
-	nl_Query.write("ANTS 3 --number-of-affine-iterations 0 -m CC[" + lsq12_MNC_path + SpecID + "_lsq12.mnc," + nl_4_Avg + ",1.0,4] -m CC[" + nl_Blurred_path + SpecID + "_098_dxyz.mnc," + nl_4_Avg_098_Dxyz + ",1.0,4] -x [" + nl_4_Avg_Mask_098_Blur + "] -t SyN[0.4] -r Gauss[5,1] -i 100x100x100x0 -o " + nl_XFM_path + SpecID + "_ANTS_nl.xfm\n")
-	nl_Query.write("xfmconcat -clobber " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm " + lsq12_XFM_path + SpecID + "_lsq12_2.xfm " + nl_XFM_path + SpecID + "_ANTS_nl.xfm " + nl_XFM_path + SpecID + "_origtoANTSnl.xfm\n")
-	nl_Query.write("mincresample -like " + nl_4_Avg + " -clobber -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl.xfm " + Source_MNC_path + SpecID + ".mnc "+ nl_MNC_path + SpecID + "_ANTS_nl.mnc\n\n")
-	nl_Query.write("xfminvert -clobber " + nl_XFM_path + SpecID + "_origtoANTSnl.xfm " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm\n")
-	# To propagate the landmarks, we invert the entire transformation, then use "transformtags" to propagate the atlas landmarks along this path. The resulting landmarks are in "/home/$USER/<PROJECT>/Source/Tag/".
-	nl_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + nl_4_Avg_LM + " " + Source_Tag_path + SpecID + "_landmarks.tag\n")
+	nl_Query.write("ANTS 3 --number-of-affine-iterations 0 -m CC[" + lsq12_MNC_path + SpecID + "_lsq12.mnc," + Atlas_Avg + ",1.0,4] -m CC[" + nl_Blurred_path + SpecID + "_098_dxyz.mnc," + Atlas_Avg_098_Dxyz + ",1.0,4] -x [" + Atlas_Avg_Mask_098_Blur + "] -t SyN[0.4] -r Gauss[5,1] -i 100x100x100x0 -o " + nl_XFM_path + SpecID + "_ANTS_nl.xfm\n")
 	nl_Query.write("echo \"The job ended at $(date).\"")
 	# Close the file.
 	nl_Query.close()

@@ -1,5 +1,9 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-# Julia script for landmark neural net.
+# Julia script for landmark neural net. This script is designed to optimize sparse shape coordinates for a morpohometric analysis. When collecting phenotypic data with an automated phenotyping pipeline, it is not uncommon to encounter labelling errors in outliers. Genetically modified mice can deviate substantially from an average due to missing anatomy, vestigial/supernumerary parts, etc. As such, it is helpful to use existing manual datasets, particularly those with outliers, to guide the automated predictions. So long as the automated and manual training data are homologous, the script can optimize shape predictions for an arbitrary number of landmarks. 
+
+# Citation: Percival, C.J., Devine, J., Darwin, B.C., Liu, W., van Eede, M., Henkelman, R.M. and Hallgrimsson, B., 2019. The effect of automated landmark identification on morphometric analyses. J Anat (2019). https://doi.org/10.1111/joa.12973
+# Citation: Devine, J., Aponte, J.D., Katz, D.C. et al. A Registration and Deep Learning Approach to Automated Landmark Detection for Geometric Morphometrics. Evol Biol (2020). https://doi.org/10.1007/s11692-020-09508-8
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # Import packages.
 using Pkg
@@ -16,7 +20,7 @@ using BSON: @save
 using BSON: @load
 # using CuArrays # If you want to use the GPU instead of CPU.
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-# The only notes you need to read, and the only variables you need to alter, are between these lines.
+# The only variables you need to alter are between these dashed lines.
 # 1. NOTES:
 
 # A) Follow the code in GPA_and_Projection.R. This involves performing separate GPAs on the manual and registration-derived landmarks,
@@ -53,10 +57,10 @@ x_Test = reshape(collect(x_Test), size(x_Test)[1], size(x_Test)[2])
 # Define whether your data are in two or three (K) dimensions.
 K = 3
 
+#----------------------------------------------------------------------------------------------------------------------------
 # Determine how many landmarks (P) there are.
 P = trunc(Int, size(x_Train)[1]/K)
 
-#----------------------------------------------------------------------------------------------------------------------------
 # Define loss functions.
 # First, we define an RMSE loss, as it improves performance over MSE alone.
 function RMSE(x,y)

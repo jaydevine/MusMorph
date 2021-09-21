@@ -1,32 +1,34 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Preprocessing and initialization instructions.
 
-Citation:
-
 Preprocessing and initialization can easily be performed on a local machine.
 
 #------------------------------------------------------------------------------------------------------------------------
 
 After downloading the MINC software, add it to your ~/.bashrc script (Linux) or ~/.bash_profile (Mac):  
 
-`nano ~/.bashrc` # scroll to the bottom and add ". /opt/minc/1.9.17/minc-toolkit-config.sh" to call the software in every new Terminal. Ctrl+X+X to save and exit.
+`nano ~/.bashrc` # scroll to the bottom and add ". /opt/minc/1.9.18/minc-toolkit-config.sh" to call the software in every new Terminal. Ctrl+X+X to save and exit.
 
 Begin by making a directory structure. This structure is important as you will probably want to replicate it on a 
 compute cluster for remote processing. Move to /path/to/local/directory and let \<PROJECT\> be your given project name. 
 
 `cd /path/to/local/directory`  
 
-`mkdir -p <PROJECT>{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
+`mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Blurred,MNC,Orig,Resample,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
 
 Next we want to convert our set of image volumes to .mnc. You can find conversion commands at http://bic-mni.github.io/man-pages/ and in our GitHub MusMorph "Preprocessing" directory (https://github.com/jaydevine/MusMorph/tree/main/Preprocessing). 
 
 Let's place our converted .mnc files in /path/to/\<PROJECT\>/Source/MNC. 
   
-If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (https://github.com/jaydevine/MusMorph/blob/main/Processing/SyN_Registration.py). Skip to the end of this file to setup your cluster for the registrations.
+If your images were scanned in a standard orientation and are roughly aligned, they can be automatically initialized to the reference image. This process is embedded in the full non-linear registration script (e.g. https://github.com/jaydevine/MusMorph/blob/main/Processing/LoRes_Pairwise.py). Skip to the end of this file to setup your cluster for the registrations.
 
 If your images were not scanned in a standard orientation, we need to manually initialize them. To do this, we need to render the image volumes as surfaces and roughly place >=4 landmarks to translate and rotate each image into a reference image space, where we have 1 to 1 voxel correspondences. An interesting way to do this is blur the image (e.g., mincblur -fwhm 0.3, where 0.3 is 300 microns or 10x our original resolution. This homogenizes the intensity profile), then loop through the blurred images and automatically generate a surface:  
 
-`for file in *.mnc; do base=$(basename ${file} .mnc); echo ${base}; mincblur -fwhm 0.3 ${file} ${base}; biModalT=$(mincstats -quiet -biModalT ${base}_blur.mnc); echo ${biModalT}; marching_cubes ${base}_blur.mnc ${base}.obj ${biModalT}; done`
+`for file in *.mnc; do base=$(basename ${file} .mnc); echo ${base}; mincblur -clobber -fwhm 0.3 ${file} ${base}; STATS=$(mincstats -quiet -biModalT ${base}_blur.mnc); echo ${STATS}; marching_cubes ${base}_blur.mnc ${base}.obj ${STATS}; rm ${base}_blur.mnc; done`
+
+If this thresholding option doesn't work for you, try another method, like Kapur:
+
+`for file in *.mnc; do base=$(basename ${file} .mnc); echo ${base}; mincblur -clobber -fwhm 0.3 ${file} ${base}; STATS=$(mincstats -quiet -kapur ${base}_blur.mnc); Kapur=$(echo "${STATS}" | tr " " "\n" | sed -n '21p'); marching_cubes ${base}_blur.mnc ${base}.obj ${Kapur}; rm ${base}_blur.mnc; done`
 
 We can then "Display" the .obj surface and place our homologous markers for initialization:
 
@@ -74,15 +76,13 @@ With this average, or with your atlas file, we want to create a mask. The purpos
 
 `mincmorph -clobber -successive B[lower:upper]DDDDDDDD LM_average.mnc LM_average_mask.mnc`  
 
-where lower and upper are the lower and upper bounds of the densities you wish to include in the mask. "D" refers to dilation and it is used to fill in holes of the mask. Adding more "D"s simply means more dilations. Ideally you have a mask that covers all of the desired anatomy and has no holes. If you have an atlas, just change LM_average.mnc to the atlas name. We use the name NL_4_average.mnc in our scripts.  
-
-We should now have an atlas (or an initialized average), an atlas mask (or an initilaized average mask), and a set of source images that have been rigidly aligned to the space of this reference image. We want to put these images onto a cluster for parallel registrations, as this is a computationally intense process. To do so, we first ssh into our cluster of choice:
+where lower and upper are the lower and upper bounds of the densities you wish to include in the mask. "D" refers to dilation and it is used to fill in holes of the mask. Adding more "D"s simply means more dilations. Ideally you have a mask that covers all of the desired anatomy and has no holes. We should now have an atlas (or an initialized average), an atlas mask (or an initilaized average mask), and a set of source images that have been rigidly aligned to the space of this reference image. We want to put these images onto a cluster for parallel registrations, as this is a computationally intense process. To do so, we first ssh into our cluster of choice:
 
 `ssh <USER>@clustername`  
 
 Replicate our local directory structure:
 
-`mkdir -p <PROJECT>/{Scripts,Source/{aim,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`  
+`mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Blurred,MNC,Orig,Resample,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}`
 
 In a separate Terminal, sftp to "put" the atlas/average, mask, and initialized .mnc files into these directories:
 

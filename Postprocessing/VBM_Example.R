@@ -1,5 +1,8 @@
 #-----------------------------------------------------------------------------------------------------------------------
-# An example VBM script. 
+# An example VBM script. This script takes in a set of .mnc Jacobian determinant volumes (see Jacobians.sh for more detail on how to generate them) and performs a simple voxel-based morphometry test. Statistical parametric maps can be derived with the shinyRMINC application or with one of their plotting functions, such as "mincPlotSliceSeries". These maps can localize the magnitude, variance, etc. of morphological change among experimental groups at each voxel. They are a useful way to show morphological change across a volume, rather than just on the surface, as is common with geometric morphometrics.
+
+# Citation: https://github.com/Mouse-Imaging-Centre/RMINC. 
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 # Load libraries. 
@@ -83,4 +86,4 @@ mincWriteVolume(Variance, "/path/for/newfile/<>.mnc", "", like.filename = "/path
 # To read the file in later, use mincGetVolume, like we did with the atlas:
 Variance <- mincGetVolume("/path/for/newfile/<>.mnc")
 
-# There are numerous other handy functions, thanks to the RMINC developers: https://github.com/Mouse-Imaging-Centre/RMINC. 
+# There are numerous other handy functions, thanks to the RMINC developers.

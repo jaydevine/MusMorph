@@ -9,15 +9,15 @@ MONTAGE_CMD="montage -geometry +2+2"
 # Start a while loop to read your FILENAME line by line. 
 while read -r line
 do
-	# The 'SpecID' variable becomes each line within FILENAME. 
-	SpecID="$line"
+	# The 'Biosample' variable becomes each line within FILENAME. 
+	Biosample="$line"
 	cd "/path/to/aim"
-	echo "Working on $SpecID at /path/to/aim"
-	# TXTFILE and AIMFILE use the variable $SpecID, or the line, to define the text and aim files. Thus, each specimen in FILENAME should not have a suffix. 
-	TXTFILE="$SpecID.txt"
-	AIMFILE="$SpecID.aim"
-	# The new .mnc file is sent to /path/to/aim and is given the SpecID $SpecID.mnc. 
-	MNCFILE="/path/to/aim/$SpecID.mnc"	
+	echo "Working on $Biosample at /path/to/aim"
+	# TXTFILE and AIMFILE use the variable $Biosample, or the line, to define the text and aim files. Thus, each specimen in FILENAME should not have a suffix. 
+	TXTFILE="$Biosample.txt"
+	AIMFILE="$Biosample.aim"
+	# The new .mnc file is sent to /path/to/aim and is given the Biosample $Biosample.mnc. 
+	MNCFILE="/path/to/aim/$Biosample.mnc"	
 	# Change the .txt header to UNIX format, then use information within the header to automatically produce .mnc files. 
 	dos2unix $TXTFILE				
 	# Search for offset.
@@ -44,15 +44,15 @@ do
 	RES_Z=${ARR_RES[6]}
 	# Use the parameters defined above to convert the raw data into a .mnc file.
 	rawtominc -input $AIMFILE -short -scan_range -clobber -skip $ACT_OFFSET -xstep $RES_X -ystep $RES_Y -zstep $RES_Z -origin 0 0 0 $MNCFILE $ACT_Z $ACT_Y $ACT_X
-	echo "rawtominc -input "$SpecID.aim" -short -scan_range -clobber -skip $ACT_OFFSET -xstep $RES_X -ystep $RES_Y -zstep $RES_Z -origin 0 0 0 "$SpecID.mnc" $ACT_Z $ACT_Y $ACT_X"
+	echo "rawtominc -input "$Biosample.aim" -short -scan_range -clobber -skip $ACT_OFFSET -xstep $RES_X -ystep $RES_Y -zstep $RES_Z -origin 0 0 0 "$Biosample.mnc" $ACT_Z $ACT_Y $ACT_X"
 	# Create the montage image for all newly created .mnc files.
 	cd "/path/to/aim"		
 	qcpost="_QC.png"	
-	qcfile="$SpecID$qcpost"	
+	qcfile="$Biosample$qcpost"	
 	labpost="_QC_labeled.png"
-	labfile="$SpecID$labpost"	
-	mincpik -clobber -scale 20 -triplanar "$SpecID.mnc" "$qcfile"
-	convert -label $SpecID "$qcfile" "$labfile"
+	labfile="$Biosample$labpost"	
+	mincpik -clobber -scale 20 -triplanar "$Biosample.mnc" "$qcfile"
+	convert -label $Biosample "$qcfile" "$labfile"
 
 	MONTAGE_CMD+=" /path/to/aim/$labfile"		#Build full montage command
 	echo $MONTAGE_CMD

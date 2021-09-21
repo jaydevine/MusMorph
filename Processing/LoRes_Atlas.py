@@ -18,7 +18,7 @@ import csv
 # 5) The initialized source images, average, and average mask must be sftp'd into your remote /path/to/<PROJECT>/Source/MNC directory;
 # 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote /path/to/<PROJECT>/Scripts directory. 
 
-#---LOCAL---
+# LOCAL:
 
 # Change the working directory.
 os.chdir("/path/to/<PROJECT>/Scripts")
@@ -28,7 +28,7 @@ All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 # Create remote directory structure that matches your local structure. E.g.:
 # mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
-#---REMOTE---
+# REMOTE:
 
 # Define supercomputer paths.
 Scripts_path = "/path/to/<PROJECT>/Scripts/"
@@ -53,7 +53,7 @@ lsq12_Avg = "/path/to/<PROJECT>/lsq12/<PROJECT>_lsq12_average.mnc"
 nl_1_Avg = "/path/to/<PROJECT>/nl/MNC/NL_1_average.mnc"
 nl_2_Avg = "/path/to/<PROJECT>/nl/MNC/NL_2_average.mnc"
 nl_3_Avg = "/path/to/<PROJECT>/nl/MNC/NL_3_average.mnc"
-nl_4_Avg = "/path/to/<PROJECT>/nl/MNC/NL_4_average.mnc"
+nl_4_Avg = "/path/to/<PROJECT>/nl/MNC/<PROJECT>_Atlas.mnc"
 
 # Define blur files without "_blur" suffix.
 LM_Avg_352 = "/path/to/<PROJECT>/Source/MNC/LM_average_352"

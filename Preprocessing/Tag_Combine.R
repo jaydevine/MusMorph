@@ -1,4 +1,4 @@
-# This is an R script that will accept two input .tag files (with >=4  init. markers) and combine them into a two volume tag file that will be converted into a rigid transformation matrix. 
+# This is an R script that will accept two input .tag files (with >=4  homologous init. markers) and combine them into a two volume tag file that will be converted into a rigid transformation matrix. 
 
 # Define function. 
 Combine_Tag=function(Source_XFM_path,Atlas,SpecID){
@@ -24,7 +24,7 @@ Combine_Tag=function(Source_XFM_path,Atlas,SpecID){
 Source_MNC_path="/path/to/Source/MNC"
 # Define the path to the .tag files.
 Source_Tag_path="/path/to/Source/Tag"
-# Define the name of your reference specimen or atlas. 
+# Define the name of your reference specimen or atlas, excluding the file extension. 
 Atlas=""
 # Define your .txt file of specimen names, say spec_list.txt.
 All_Specimens=read.table(paste(Source_MNC_path,"spec_list.txt",sep="/"),stringsAsFactors=FALSE)

@@ -18,7 +18,7 @@ import csv
 # 5) The initialized source images, average, and average mask must be sftp'd into your remote /path/to/<PROJECT>/Source/MNC directory on the cluster before any analyses can begin.
 # 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote /path/to/<PROJECT>/Scripts directory.
 
-#---LOCAL---
+# LOCAL:
 
 # Change the working directory.
 os.chdir("/path/to/<PROJECT>/Scripts")
@@ -28,7 +28,7 @@ All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 # Create remote directory structure that matches your local structure. E.g.:
 # mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
-#---REMOTE---
+# REMOTE:
 
 # Define supercomputer paths.
 Scripts_path = "/path/to/<PROJECT>/Scripts/"
