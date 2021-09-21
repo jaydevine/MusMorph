@@ -7,11 +7,11 @@ library(morpho.tools.GM)
 library(Rvcg)
 
 #### 1. Load data ####
-mand_mesh <- geomorph::read.ply("./Postprocessing/data/atlas/Calgary_Adult_Mandible_Atlas_lowres.ply")
-atlas_mand_lm <- morpho.tools.GM::tag2lm("./Postprocessing/data/atlas/Calgary_Adult_Mandible_Atlas_Landmarks.tag")
+mand_mesh <- geomorph::read.ply("./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_DS.ply")
+atlas_mand_lm <- morpho.tools.GM::tag2lm("./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_Landmarks.tag")
 
 # Divide the data into type of landmark
-LM_type_mand <- suppressWarnings(read.table(file = "./Postprocessing/data/atlas/Calgary_Adult_Mandible_Atlas_Landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
+LM_type_mand <- suppressWarnings(read.table(file = "./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_Landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
 levels(as.factor(LM_type_mand))
 vec_LM_mand <- which(LM_type_mand == "LANDMARK")
 vec_curve_mand <- which(LM_type_mand == "curve_semilandmark")
@@ -36,9 +36,9 @@ rgl::plot3d(atlas_mand_lm_correct[mand_fixed.lm,], aspect="iso", type="s", size=
 #              cex = 1.5, offset = 0.5, pos = 3)
 rgl::plot3d(atlas_mand_lm_correct[mand_curves.lm,], aspect="iso", type="s", size=0.9, col="green", add=T)
 rgl::plot3d(atlas_mand_lm_correct[mand_surface.lm,], aspect="iso", type="s", size=0.6, col="blue", add=T)
-rgl::rgl.snapshot("./Postprocessing/output/Mandible_LM_lateral.png", top = TRUE)
-rgl::rgl.snapshot("./Postprocessing/output/Mandible_LM_dorsal.png", top = TRUE)
-rgl::rgl.snapshot("./Postprocessing/output/Mandible_LM_posterior.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/Output/Mandible_LM_lateral.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/Output/Mandible_LM_dorsal.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/Output/Mandible_LM_posterior.png", top = TRUE)
 rgl::rgl.close()
 
 
@@ -142,10 +142,10 @@ ls(pattern="curveslide*")
 curveslide_list <- lapply(ls(pattern="curveslide_*"), get)
 curveslide_all <- do.call(rbind, curveslide_list)
 
-write.csv(curveslide_all, "./Postprocessing/output/curveslide_mandible.csv")
+write.csv(curveslide_all, "./Postprocessing/Calgary_Adult_Mandible_Atlas_Curveslide.csv")
 
 #### 4. Analysing the 3D landmark data with GMM ####
 # For example:
-mand_array <- morpho.tools.GM::tag2array(string_del = "_mand_landmarks.tag", propagated = TRUE)
+mand_array <- morpho.tools.GM::tag2array(string_del = "_Mandible_Landmarks.tag", propagated = TRUE)
 
 GPA_mandcast <- geomorph::gpagen(A = mand_array, curves = as.matrix(curveslide_all), surfaces = mand_surface.lm)

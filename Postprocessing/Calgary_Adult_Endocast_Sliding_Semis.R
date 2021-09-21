@@ -7,18 +7,12 @@ library(morpho.tools.GM)
 library(Rvcg)
 
 #### 1. Load data ####
-# endo_mesh <- geomorph::read.ply("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas.ply")
-# endo_lowres <- vcgQEdecim(endo_mesh, percent = 0.125)
-# rgl::open3d(windowRect = c(20, 30, 800, 800))
-# rgl::shade3d(endo_lowres, color="gray", alpha=1)
-# writePLY("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_lowres.ply")
+endo_mesh <- geomorph::read.ply("./Postprocessing/Data/Atlases/Calgary_Adult_Endocast_Atlas_DS.ply")
 
-endo_mesh <- geomorph::read.ply("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_lowres.ply")
-
-atlas_endo_lm <- morpho.tools.GM::tag2lm("./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_Landmarks.tag")
+atlas_endo_lm <- morpho.tools.GM::tag2lm("./Postprocessing/Data/Atlases/Calgary_Adult_Endocast_Atlas_Landmarks.tag")
 
 # Divide the data into type of landmark
-LM_type_endo <- suppressWarnings(read.table(file = "./Postprocessing/data/atlas/Calgary_Adult_Endocast_Atlas_Landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
+LM_type_endo <- suppressWarnings(read.table(file = "./Postprocessing/Data/Atlases/Calgary_Adult_Endocast_Atlas_Landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
 levels(as.factor(LM_type_endo))
 vec_LM_endo <- which(LM_type_endo == "LANDMARK")
 vec_curve_endo <- which(LM_type_endo == "curve_semilandmark")
@@ -44,9 +38,9 @@ rgl::plot3d(atlas_endo_lm[ENDO_fixed.lm,], aspect="iso", type="s", size=1, col="
 rgl::plot3d(atlas_endo_lm[ENDO_curves.lm,], aspect="iso", type="s", size=0.9, col="green", add=T)
 rgl::plot3d(atlas_endo_lm[87:108,], aspect="iso", type="s", size=0.8, col="black", add=T)
 rgl::plot3d(atlas_endo_lm[ENDO_surface.lm,], aspect="iso", type="s", size=0.6, col="blue", add=T)
-rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_lateral.png", top = TRUE)
-rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_dorsal.png", top = TRUE)
-rgl::rgl.snapshot("./Postprocessing/output/Endocast_LM_ventral.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/Output/Endocast_LM_lateral.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/Output/Endocast_LM_dorsal.png", top = TRUE)
+rgl::rgl.snapshot("./Postprocessing/Output/Endocast_LM_ventral.png", top = TRUE)
 rgl::rgl.close()
 
 
@@ -125,11 +119,11 @@ ls(pattern="curveslide*")
 curveslide_list <- lapply(ls(pattern="curveslide*"), get)
 curveslide_all <- do.call(rbind, curveslide_list[1:18])
 
-write.csv(curveslide_all, "./Postprocessing/output/curveslide_endocast.csv")
+write.csv(curveslide_all, "./Postprocessing/Calgary_Adult_Endocast_Atlas_Curveslide.csv")
 
 #### 4. Analysing the 3D landmark data with GMM ####
 # For example:
-endo_array <- morpho.tools.GM::tag2array(string_del = "_endo_landmarks.tag", propagated = TRUE)
+endo_array <- morpho.tools.GM::tag2array(string_del = "_Endocast_Landmarks.tag", propagated = TRUE)
 
 GPA_endocast <- geomorph::gpagen(A = endo_array, curves = as.matrix(curveslide_all), surfaces = ENDO_surface.lm)
 
