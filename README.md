@@ -10,12 +10,13 @@ Big data, morphology, phenotyping, genotype-phenotype map, complex traits, morph
 
 ## **Prerequisites for acquiring new data and/or analyzing and visualizing the data**
 
-1. Linux or macOS;
+1. Linux or macOS; 
 2. [Medical Imaging NetCDF (MINC) Toolkit](https://github.com/BIC-MNI/minc-toolkit-v2) (or from their [website](https://bic-mni.github.io/)) with local and remote/compute cluster installations. Note that MINC is a modality neutral imaging data format and associated set of tools and libraries developed at the Montreal Neurological Institute (MNI) and freely available online. More information can be found at the [MINC Wikibooks page](http://en.wikibooks.org/wiki/MINC);
-3. Volumetric imaging data. 
+3. Volumetric imaging data; 
 4. [Python](https://www.python.org/downloads/) and associated packages;
 5. [R](https://cran.r-project.org/bin/) and associated packages;
-6. [Julia](https://julialang.org/downloads/) and associated packages.
+6. [Julia](https://julialang.org/downloads/) and associated packages;
+7. A [FaceBase account](https://www.facebase.org).
 
 ## **Notes on Data**
 
