@@ -18,7 +18,7 @@ Big data, morphology, phenotyping, genotype-phenotype map, complex traits, morph
 
 ## **Notes on Data**
 
-The data and metadata are available on [FaceBase](https://www.facebase.org).
+The data and metadata are available in the [MusMorph project repository](https://doi.org/10.25550/3-HXMC) on [FaceBase](https://www.facebase.org).
 
 ## **License**
 
