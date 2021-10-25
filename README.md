@@ -1,7 +1,5 @@
 # **MusMorph, a database of standardized mouse morphology data for morphometric meta-analyses**
 
-Citation: TBD.
-
 This repository contains a) Bash/R preprocessing scripts for file conversion and initialization, b) Python/Bash processing scripts for atlas construction, pairwise volumetric image registration, and labelling (e.g., segmentations or landmarks), c) R and Julia postprocessing scripts to optimize your landmark predictions if need be, as well as example R scripts.
 
 ## **Keywords**
