@@ -23,7 +23,7 @@ os.chdir("/path/to/<PROJECT>/Scripts")
 All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 
 # Create remote directory structure that matches your local structure. E.g.:
-# mkdir -p <PROJECT>/{Scripts,Quality,Source/{aim,Resample,Blurred,MNC,Orig,Corr,Tag,Tiff,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
+# mkdir -p <PROJECT>/{Scripts,Quality,Source/{Blurred,MNC,Orig,Resample,Tag,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
 # REMOTE:
 
@@ -45,16 +45,16 @@ nl_Blurred_path = "/path/to/<PROJECT>/nl/Blurred/"
 nl_XFM_path = "/path/to/<PROJECT>/nl/XFM/"
 nl_MNC_path = "/path/to/<PROJECT>/nl/MNC/"
 
-# Define atlas file and mask. 
+# Define atlas file and mask. E.g. the Calgary adult skull atlas:
 Atlas_Avg = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas.mnc"
 Atlas_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas_Mask.mnc"
 
-# Define atlas landmarks. 
+# Define atlas landmarks. E.g. the Calgary adult landmarks:
 Atlas_Avg_LM = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Cranium_Atlas_Landmarks.tag"
 Atlas_Avg_Endo_LM = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Endocast_Atlas_Landmarks.tag"
 Atlas_Avg_Mand_LM = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Mandible_Atlas_Landmarks.tag"
 
-# Define atlas segmentations. 
+# Define atlas segmentations. E.g. the Calgary adult segmentations:
 Atlas_Avg_Segs = "/path/to/<PROJECT>/Source/MNC/Calgary_Adult_Skull_Atlas_Segs.mnc"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

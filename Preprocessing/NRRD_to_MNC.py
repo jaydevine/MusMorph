@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 """
+This script converts a single NRRD (.nrrd) file to a MINC (.mnc) file. 
+
 Dependencies required: pynrrd  (pip install pynrrd), teem-unu (sudo apt install teem-apps), numpy (pip install numpy), MINC Toolkit (https://bic-mni.github.io/ or https://github.com/BIC-MNI/minc-toolkit-v2).
 
 sudo pip3 install --system pynrrd
 
-The script can be ran via python3 nrrdtmnc.py -i filename -p res 
+It can be ran via python3 nrrdtmnc.py -i filename -p res
 """
 
 import argparse
