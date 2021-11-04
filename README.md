@@ -1,7 +1,5 @@
 # **MusMorph, a database of standardized mouse morphology data for morphometric meta-analyses**
 
-Citation: TBD.
-
 This repository contains a) Bash/R preprocessing scripts for file conversion and initialization, b) Python/Bash processing scripts for atlas construction, pairwise volumetric image registration, and labelling (e.g., segmentations or landmarks), c) R and Julia postprocessing scripts to optimize your landmark predictions if need be, as well as example R scripts.
 
 ## **Keywords**
@@ -10,16 +8,17 @@ Big data, morphology, phenotyping, genotype-phenotype map, complex traits, morph
 
 ## **Prerequisites for acquiring new data and/or analyzing and visualizing the data**
 
-1. Linux or macOS;
+1. Linux or macOS; 
 2. [Medical Imaging NetCDF (MINC) Toolkit](https://github.com/BIC-MNI/minc-toolkit-v2) (or from their [website](https://bic-mni.github.io/)) with local and remote/compute cluster installations. Note that MINC is a modality neutral imaging data format and associated set of tools and libraries developed at the Montreal Neurological Institute (MNI) and freely available online. More information can be found at the [MINC Wikibooks page](http://en.wikibooks.org/wiki/MINC);
-3. Volumetric imaging data. 
+3. Volumetric imaging data; 
 4. [Python](https://www.python.org/downloads/) and associated packages;
 5. [R](https://cran.r-project.org/bin/) and associated packages;
-6. [Julia](https://julialang.org/downloads/) and associated packages.
+6. [Julia](https://julialang.org/downloads/) and associated packages;
+7. A [FaceBase account](https://www.facebase.org).
 
 ## **Notes on Data**
 
-The data and metadata are available on [FaceBase](https://www.facebase.org).
+The data and metadata are available in the [MusMorph project repository](https://doi.org/10.25550/3-HXMC) on [FaceBase](https://www.facebase.org).
 
 ## **License**
 
