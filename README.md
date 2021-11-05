@@ -4,7 +4,7 @@ This repository contains a) Bash/R preprocessing scripts for file conversion and
 
 ## **Keywords**
 
-Big data, morphology, phenotyping, genotype-phenotype map, complex traits, morphometrics, micro-computed tomography.
+Mouse, phenomics, craniofacial, imaging pipelines, deep learning, morphometrics, micro-computed tomography, FaceBase
 
 ## **Prerequisites for acquiring new data and/or analyzing and visualizing the data**
 
