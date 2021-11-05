@@ -18,7 +18,7 @@ Big data, morphology, phenotyping, genotype-phenotype map, complex traits, morph
 
 ## **Notes on Data**
 
-The data and metadata are available in the [MusMorph project repository](https://doi.org/10.25550/3-HXMC) on [FaceBase](https://www.facebase.org).
+The data and metadata are available in the [MusMorph project repository](https://doi.org/10.25550/3-HXMC) on [FaceBase](https://www.facebase.org). After creating a free account and logging in, the MusMorph data and metadata can be downloaded at any level in the project hierarchy using the “Export: BDBag” tool at the top-right of the browser. This export function uses DERIVA, the software platform that powers FaceBase, to generate a BDBag (Big Data Bag) ZIP file. Users then need to download the file and process it via BDBag client tools, either via the command line or GUI application. Specific details about the DERIVA Client installation and the step-by-step export instructions are available here: www.facebase.org/help/exporting.
 
 ## **License**
 
