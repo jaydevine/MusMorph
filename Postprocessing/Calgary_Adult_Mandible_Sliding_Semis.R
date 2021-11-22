@@ -7,11 +7,12 @@ library(morpho.tools.GM)
 library(Rvcg)
 
 #### 1. Load data ####
-mand_mesh <- geomorph::read.ply("./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_DS.ply")
+mand_mesh <- geomorph::read.ply("./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_DS_ascii.ply")
 atlas_mand_lm <- morpho.tools.GM::tag2lm("./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_Landmarks.tag")
+atlas_mand_lm <- suppressWarnings(read.table(file = "./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_Landmarks.tag", skip = 5, sep = " ", header=F))[, 2:4]
 
 # Divide the data into type of landmark
-LM_type_mand <- suppressWarnings(read.table(file = "./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_Landmarks.tag", skip = 4, sep = " ", header=F))[, 8]
+LM_type_mand <- suppressWarnings(read.table(file = "./Postprocessing/Data/Atlases/Calgary_Adult_Mandible_Atlas_Landmarks.tag", skip = 5, sep = " ", header=F))[, 8]
 levels(as.factor(LM_type_mand))
 vec_LM_mand <- which(LM_type_mand == "LANDMARK")
 vec_curve_mand <- which(LM_type_mand == "curve_semilandmark")
@@ -28,14 +29,14 @@ rgl::open3d(windowRect = c(20, 30, 800, 800))
 # rgl.pop("lights")
 # light3d(specular="black")
 rgl::shade3d(mand_mesh, color="gray")
-rgl::plot3d(atlas_mand_lm_correct[mand_fixed.lm,], aspect="iso", type="s", size=1, col="red", add=T)
+rgl::plot3d(atlas_mand_lm[mand_fixed.lm,], aspect="iso", type="s", size=1, col="red", add=T)
 # rgl::text3d(x = atlas_mand_lm[mand_fixed.lm, 1], 
 #              y = atlas_mand_lm[mand_fixed.lm, 2], 
 #              z=  atlas_mand_lm[mand_fixed.lm, 3], 
 #              texts = row.names(atlas_mand_lm[mand_fixed.lm, ]), 
 #              cex = 1.5, offset = 0.5, pos = 3)
-rgl::plot3d(atlas_mand_lm_correct[mand_curves.lm,], aspect="iso", type="s", size=0.9, col="green", add=T)
-rgl::plot3d(atlas_mand_lm_correct[mand_surface.lm,], aspect="iso", type="s", size=0.6, col="blue", add=T)
+rgl::plot3d(atlas_mand_lm[mand_curves.lm,], aspect="iso", type="s", size=0.9, col="green", add=T)
+rgl::plot3d(atlas_mand_lm[mand_surface.lm,], aspect="iso", type="s", size=0.6, col="blue", add=T)
 rgl::rgl.snapshot("./Postprocessing/Output/Mandible_LM_lateral.png", top = TRUE)
 rgl::rgl.snapshot("./Postprocessing/Output/Mandible_LM_dorsal.png", top = TRUE)
 rgl::rgl.snapshot("./Postprocessing/Output/Mandible_LM_posterior.png", top = TRUE)
@@ -148,4 +149,4 @@ write.csv(curveslide_all, "./Postprocessing/Calgary_Adult_Mandible_Atlas_Curvesl
 # For example:
 mand_array <- morpho.tools.GM::tag2array(string_del = "_Mandible_Landmarks.tag", propagated = TRUE)
 
-GPA_mandcast <- geomorph::gpagen(A = mand_array, curves = as.matrix(curveslide_all), surfaces = mand_surface.lm)
+GPA_mandible <- geomorph::gpagen(A = mand_array, curves = as.matrix(curveslide_all), surfaces = mand_surface.lm)
