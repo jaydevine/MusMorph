@@ -143,7 +143,7 @@ ls(pattern="curveslide*")
 curveslide_list <- lapply(ls(pattern="curveslide_*"), get)
 curveslide_all <- do.call(rbind, curveslide_list)
 
-write.csv(curveslide_all, "./Postprocessing/Calgary_Adult_Mandible_Atlas_Curveslide.csv")
+write.csv(curveslide_all, "./Postprocessing/output/semiLMs_sliding/Calgary_Adult_Mandible_Atlas_Curveslide.csv")
 
 #### 4. Analysing the 3D landmark data with GMM ####
 # For example:

@@ -6,6 +6,7 @@ Postprocessing/.DS_Store
 Postprocessing/data/.DS_Store
 Postprocessing/data/atlas/.DS_Store
 MusMorph.Rproj
+Postprocessing/preprocessing/
 
 # Temporary
 Postprocessing/Plot_LM_Meshes_atlas.R
