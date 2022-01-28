@@ -1,10 +1,12 @@
 # Permanent
 .Rproj.user
+.Rhistory
 .DS_Store
 Postprocessing/.DS_Store
 Postprocessing/data/.DS_Store
 Postprocessing/data/atlas/.DS_Store
 MusMorph.Rproj
+Postprocessing/preprocessing/
 
 # Temporary
 Postprocessing/Plot_LM_Meshes_atlas.R
@@ -19,3 +21,5 @@ Postprocessing/sliding_semis_skull.R
 Postprocessing/Preprocessing_mandible_LMs.R
 Postprocessing/data/atlas/mand_semis/
 Preprocessing/DICOM_to_MNC.sh
+Postprocessing/Preprocessing_skull.R
+Postprocessing/data/atlas/
