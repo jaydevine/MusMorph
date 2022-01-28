@@ -28,12 +28,14 @@ do
 	# Calc lower density bound for thresholding. Use Kapur or Bimodal metric. Bimodal thresholding is our default.
 	BIMODAL=$(mincstats -quiet -biModalT ${line}_blur.mnc)
 	ZERO=0
-	#KAPUR_STATS=$(mincstats -quiet -kapur ${line}_blur.mnc)
-	#KAPUR=$(echo "${KAPUR_STATS}" | tr " " "\n" | sed -n '21p')
+	# If the bimodal algorithm is too sensitive, try the Kapur algorithm below.
+	KAPUR_STATS=$(mincstats -quiet -kapur ${line}_blur.mnc)
+	KAPUR=$(echo ${KAPUR_STATS} | tr " " "\n" | sed -n '21p')
 	# Calculate upper (max) bound.
-	MAX=$(mincstats -max ${line}_blur.mnc)
+	MAX_STATS=$(mincstats -max ${line}_blur.mnc)
+	MAX=$(echo ${MAX_STATS} | cut -d' ' -f2-)
 	# Create mask for individual image. Currently using 8 dilations here, but this can be changed.
 	mincmorph -clobber -successive B[${BIMODAL}:${MAX}]DDDDDDDD ${line}_blur.mnc ${line}_blur_mask.mnc 
 	# Generate a new image called ${Biosample}_thresh.mnc that only shows the density values in the mask and 0 everywhere else. This will remove background noise.
-	minccalc -clobber -expression "if(A[1]<0.5) result=0 else result=A[0]+${ZERO}" ${Biosample} ${line}_blur_mask.mnc  ${Biosample}_thresh.mnc
+	minccalc -clobber -expression "if(A[1]<0.5) result=0 else result=A[0]+${ZERO}" ${Biosample} ${line}_blur_mask.mnc ${line}_thresh.mnc
 done < "${FILENAME}"
