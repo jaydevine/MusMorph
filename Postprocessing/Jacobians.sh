@@ -40,7 +40,7 @@ do
 	xfminvert -clobber ${Biosample}_ANTS_nl.xfm ${Biosample}_shape_inverted.xfm
 	# Compute the displacements from every voxel in the reference ATLAS to every voxel in the target image. 
 	minc_displacement -clobber ${ATLAS} ${Biosample}_form_inverted.xfm ${Biosample}_form_inverted_displacement.mnc
-	minc_displacement -clobber ${ATLAS} ${Biosample}_shape_inverted.xfm ${Biosample}_form_inverted_displacement.mnc
+	minc_displacement -clobber ${ATLAS} ${Biosample}_shape_inverted.xfm ${Biosample}_shape_inverted_displacement.mnc
 	# Calculate the determinants.
 	mincblob -clobber -determinant -clobber ${Biosample}_form_inverted_displacement.mnc ${Biosample}_form_inverted_determinant.mnc
 	mincblob -clobber -determinant -clobber ${Biosample}_shape_inverted_displacement.mnc ${Biosample}_shape_inverted_determinant.mnc
