@@ -94,7 +94,8 @@ for SpecID in Specimen_IDs:
 	# Compare the similarity of the resampled image and the atlas. 
 	Label_Query.write("echo -e \"" + SpecID + "\n$(minccmp -quiet -mask " + Atlas_Avg_Mask + " -xcorr -rmse " + Atlas_Avg + " " + nl_MNC_path + SpecID + "_ANTS_nl.mnc)\"" + " >> " + Quality_path + SpecID + "_Quality.txt\n")
 	# Invert the concatenated transformation file. 
-	Label_Query.write("xfminvert -clobber " + nl_XFM_path + SpecID + "_origtoANTSnl.xfm " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm\n")
+	Label_Query.write("xfminvert -clobber " + nl_XFM_path + SpecID + "_ANTS_nl.xfm " + nl_XFM_path + SpecID + "_ANTS_nl_inverted.xfm\n")
+	Label_Query.write("xfminvert -clobber " + nl_XFM_path + SpecID + "_origtoANTS_nl.xfm " + nl_XFM_path + SpecID + "_origtoANTS_nl_inverted.xfm\n")
 	# Propagate the atlas landmarks to the initialized space of each image using the inverted transformation file.
 	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + Atlas_Avg_LM + " " + Source_Tag_path + SpecID + "_Cranium_Landmarks.tag\n")
 	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + Atlas_Avg_Endo_LM + " " + Source_Tag_path + SpecID + "_Endocast_Landmarks.tag\n")
