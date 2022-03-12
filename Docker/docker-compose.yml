@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  musmorph:
+    image: musmorph:latest
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - $HOME/.Xauthority:/root/.Xauthority:rw
+    environment:
+      DISPLAY: $DISPLAY
