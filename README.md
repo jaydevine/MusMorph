@@ -18,8 +18,9 @@ Mouse, phenomics, craniofacial, imaging pipelines, deep learning, morphometrics,
 
 Alternatively, if you have [Docker](https://www.docker.com/), our Ubuntu image has all of these dependencies installed. After creating a FaceBase account (see 7. above), download the MusMorph data to a local directory, then pull our Docker image and run it with the data path (e.g., /path/to/data) defined:
 
-`docker pull jaydevine/musmorph:latest`
-`docker run --interactive --tty --net=host --privileged --env DISPLAY=$DISPLAY --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --volume="/path/to/data:/home/musmorph/Data" musmorph:latest /bin/bash`
+`docker pull jaydevine/musmorph:latest` 
+
+`docker run --interactive --tty --net=host --privileged --env DISPLAY=$DISPLAY --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --volume="/path/to/data:/home/musmorph/Data" musmorph:latest /bin/bash` 
 
 If you do not have data or just want to play around with commands, feel free to remove the second "--volume" option.
 
