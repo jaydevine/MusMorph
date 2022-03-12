@@ -16,7 +16,7 @@ Mouse, phenomics, craniofacial, imaging pipelines, deep learning, morphometrics,
 6. [Julia](https://julialang.org/downloads/) and associated packages;
 7. A [FaceBase account](https://www.facebase.org).
 
-Alternatively, if you have [Docker](https://www.docker.com/), our Ubuntu image has all of these dependencies installed. After creating a FaceBase account (see 7. above), download the MusMorph data to a local directory, then pull our Docker image and run it with the data path (e.g., /path/to/data) defined:
+Alternatively, if you have [Docker](https://www.docker.com/), our Ubuntu image has all of these dependencies installed. After creating a FaceBase account, download the MusMorph data to a local directory (see "Notes on Data" below), then pull our Docker image and run it with the data path (e.g., /path/to/data) defined:
 
 `docker pull jaydevine/musmorph:latest` 
 
