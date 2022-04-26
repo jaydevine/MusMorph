@@ -88,20 +88,20 @@ for SpecID in Specimen_IDs:
 	Label_Query.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=40000M\n#SBATCH --time=10:00:00\n\nmodule load minc/1.9.15\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	Label_Query.write("echo \"Begin the label propagation for " + SpecID + ".\"\n\n")
 	# Concatenate the transformation files.
-	Label_Query.write("xfmconcat -clobber " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm " + lsq12_XFM_path + SpecID + "_lsq12_2.xfm " + nl_XFM_path + SpecID + "_ANTS_nl.xfm " + nl_XFM_path + SpecID + "_origtoANTSnl.xfm\n")
+	Label_Query.write("xfmconcat -clobber " + lsq6_XFM_path + SpecID + "_lsq6_2.xfm " + lsq12_XFM_path + SpecID + "_lsq12_2.xfm " + nl_XFM_path + SpecID + "_ANTS_nl.xfm " + nl_XFM_path + SpecID + "_origtoANTS_nl.xfm\n")
 	# Resample the initialized images into the non-linear atlas space.
-	Label_Query.write("mincresample -like " + Atlas_Avg + " -clobber -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl.xfm " + Source_MNC_path + SpecID + ".mnc "+ nl_MNC_path + SpecID + "_ANTS_nl.mnc\n")
+	Label_Query.write("mincresample -like " + Atlas_Avg + " -clobber -transformation " + nl_XFM_path + SpecID + "_origtoANTS_nl.xfm " + Source_MNC_path + SpecID + ".mnc "+ nl_MNC_path + SpecID + "_ANTS_nl.mnc\n")
 	# Compare the similarity of the resampled image and the atlas. 
 	Label_Query.write("echo -e \"" + SpecID + "\n$(minccmp -quiet -mask " + Atlas_Avg_Mask + " -xcorr -rmse " + Atlas_Avg + " " + nl_MNC_path + SpecID + "_ANTS_nl.mnc)\"" + " >> " + Quality_path + SpecID + "_Quality.txt\n")
 	# Invert the concatenated transformation file. 
 	Label_Query.write("xfminvert -clobber " + nl_XFM_path + SpecID + "_ANTS_nl.xfm " + nl_XFM_path + SpecID + "_ANTS_nl_inverted.xfm\n")
 	Label_Query.write("xfminvert -clobber " + nl_XFM_path + SpecID + "_origtoANTS_nl.xfm " + nl_XFM_path + SpecID + "_origtoANTS_nl_inverted.xfm\n")
 	# Propagate the atlas landmarks to the initialized space of each image using the inverted transformation file.
-	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + Atlas_Avg_LM + " " + Source_Tag_path + SpecID + "_Cranium_Landmarks.tag\n")
-	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + Atlas_Avg_Endo_LM + " " + Source_Tag_path + SpecID + "_Endocast_Landmarks.tag\n")
-	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + Atlas_Avg_Mand_LM + " " + Source_Tag_path + SpecID + "_Mandible_Landmarks.tag\n")
+	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTS_nl_inverted.xfm " + Atlas_Avg_LM + " " + Source_Tag_path + SpecID + "_Cranium_Landmarks.tag\n")
+	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTS_nl_inverted.xfm " + Atlas_Avg_Endo_LM + " " + Source_Tag_path + SpecID + "_Endocast_Landmarks.tag\n")
+	Label_Query.write("transformtags -vol1 -transformation " + nl_XFM_path + SpecID + "_origtoANTS_nl_inverted.xfm " + Atlas_Avg_Mand_LM + " " + Source_Tag_path + SpecID + "_Mandible_Landmarks.tag\n")
 	# Propagate the atlas segmentations to the initialized space of each image using the inverted transformation file. 	
-	Label_Query.write("mincresample -like " + Atlas_Avg + " -clobber -transform " + nl_XFM_path + SpecID + "_origtoANTSnl_inverted.xfm " + Atlas_Avg_Segs + " " + Source_Resample_path + SpecID + "_Segs.mnc\n")
+	Label_Query.write("mincresample -like " + Atlas_Avg + " -clobber -transform " + nl_XFM_path + SpecID + "_origtoANTS_nl_inverted.xfm " + Atlas_Avg_Segs + " " + Source_Resample_path + SpecID + "_Segs.mnc\n")
 	Label_Query.write("echo \"The job ended at $(date).\"")
 	# Close the file.
 	Label_Query.close()
