@@ -16,6 +16,14 @@ Mouse, phenomics, craniofacial, imaging pipelines, deep learning, morphometrics,
 6. [Julia](https://julialang.org/downloads/) and associated packages;
 7. A [FaceBase account](https://www.facebase.org).
 
+Alternatively, if you have [Docker](https://www.docker.com/), our Ubuntu image has all of these dependencies installed. After creating a FaceBase account, download the MusMorph data to a local directory (see "Notes on Data" below), then pull our Docker image and run it with the data path (e.g., /path/to/data) defined:
+
+`docker pull jaydevine/musmorph:latest` 
+
+`docker run --interactive --tty --net=host --privileged --env DISPLAY=$DISPLAY --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --volume="/path/to/data:/home/musmorph/Data" musmorph:latest /bin/bash` 
+
+If you do not have data or just want to play around with commands, feel free to remove the second "--volume" option.
+
 ## **Notes on Data**
 
 The data and metadata are available in the [MusMorph project repository](https://doi.org/10.25550/3-HXMC) on [FaceBase](https://www.facebase.org). After creating a free account and logging in, the MusMorph data and metadata can be downloaded at any level in the project hierarchy using the “Export: BDBag” tool at the top-right of the browser. This export function uses DERIVA, the software platform that powers FaceBase, to generate a BDBag (Big Data Bag) ZIP file. Users then need to download the file and process it via BDBag client tools, either via the command line or GUI application. Specific details about the DERIVA Client installation and the step-by-step export instructions are available here: www.facebase.org/help/exporting.
