@@ -9,18 +9,27 @@ then
     exit
 fi
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# You only need to edit the variables within these dashed lines.
+
 # Create a variable called FILENAME that calls upon a .txt file (e.g. spec_list.txt) of specimen names. 
 FILENAME="/path/to/<PROJECT>/Source/<>.txt" 
+
+# Path to original images.
+SOURCE_PATH="/path/to/<PROJECT>/Source/Orig"
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 # Begin nii2mnc loop:
 while read -r line
 do
-	cd "/path/to/<PROJECT>/Source/Orig/"
+	cd "${SOURCE_PATH}"
 	# The 'Biosample' variable becomes each line within FILENAME. 
 	Biosample="$line"
-	echo "Working on $Biosample at /path/to/<PROJECT>/Source/Orig/"
+	echo "Working on $Biosample at ${SOURCE_PATH}"
 	NIIFILE="$Biosample.nii"
 	MNCFILE="$Biosample.mnc"
 	nii2mnc ${NIIFILE} ${MNCFILE} |& tee ./"CT_log_details_${NIIFILE%.*}.txt"
 done < "$FILENAME"
-echo "All NIFTI files have been transformed to MINC files."
