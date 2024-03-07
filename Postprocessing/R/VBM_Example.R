@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
-# An example VBM script. This script takes in a set of .mnc Jacobian determinant volumes (see Jacobians.sh for more detail on how to generate them) and performs a simple voxel-based morphometry test. Statistical parametric maps can be derived with the shinyRMINC application or with one of their plotting functions, such as "mincPlotSliceSeries". These maps can localize the magnitude, variance, etc. of morphological change among experimental groups at each voxel. They are a useful way to show morphological change across a volume, rather than just on the surface, as is common with geometric morphometrics.
+# An example VBM script. This script takes in a set of .mnc Jacobian determinant volumes (see Postprocessing/Bash/Jacobians.sh for more detail on how to generate them) and performs a simple voxel-based morphometry test. Statistical parametric maps can be derived with the shinyRMINC application or with one of their plotting functions, such as "mincPlotSliceSeries". These maps can localize the magnitude, variance, etc. of morphological change among experimental groups at each voxel. They are a useful way to show morphological change across a volume, rather than just on the surface, as is common with geometric morphometrics.
 
-# Citation: https://github.com/Mouse-Imaging-Centre/RMINC. 
+# Supporting information: https://github.com/Mouse-Imaging-Centre/RMINC. 
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -11,15 +11,15 @@ library(RMINC) # See installation of RMINC here: https://github.com/Mouse-Imagin
 library(plotrix)
 library(rgl)
 
-# Path to determinants. If you have not made these files, see Jacobians.sh.
+# Path to determinants. If you have not made these files, see Postprocessing/Bash/Jacobians.sh.
 MNC.Dir=c("/path/to/determinants")
 
-# List of form determinants.
+# List of form determinants. Say they have the following suffix: "_form_inverted_determinant_p1_blur.mnc".
 Form_List=list.files(path=MNC.Dir,pattern="*_form_inverted_determinant_p1_blur.mnc",full.names=TRUE)
-# List of shape determinants.
+# List of shape determinants. Say they have the following suffix: "_shape_inverted_determinant_p1_blur.mnc".
 Shape_List=list.files(path=MNC.Dir,pattern="*_shape_inverted_determinant_p1_blur.mnc",full.names=TRUE)
 
-# Read in dataframe with factors. 
+# Read in metadata CSV. 
 DF=read.csv("/path/to/DF/<>.csv", header=TRUE)
 
 # Order the factors as needed. For example, you may want to define your baseline factor,
@@ -44,7 +44,7 @@ FDR=mincFDR(NOSIP_LM_Nlin,
             mask="/path/to/Atlas_Mask/<>.mnc")
 
 # Check the FDR thresholds. Select your significance value, which is often p < 0.05. 
-FDR
+print(FDR)
 
 # You can plot these results with RMINC's interactive Shiny application.
 # Plotcolumns will show you the determinant value at a single voxel for each
