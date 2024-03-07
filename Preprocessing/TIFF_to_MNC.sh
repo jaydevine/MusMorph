@@ -9,17 +9,25 @@ then
     exit
 fi
 
-# Create a .txt file with the specimen names in the first column, excluding the file extension, and the original image resolutions in the second column. Use a space to delimit columns.
-FILENAME="/path/to/<PROJECT>/Source/<>.txt"
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# You only need to edit the variables within these dashed lines.
+
+# Create a .txt file with the specimen names in the first column, excluding the file extension, and the original image resolutions (mm) in the second column. Use a space to delimit columns.
+FILENAME="/path/to/<PROJECT>/Source/<>.txt" 
+
+# Path to original images.
+SOURCE_PATH="/path/to/<PROJECT>/Source/Orig"
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Begin itk_convert loop:
 while read -r line
 do
-	cd "/path/to/<PROJECT>/Source/Orig"
+	cd "${SOURCE_PATH}"
 	# The 'VAR' variable becomes each line within FILENAME.
 	VAR=( $line )
 	Biosample=${VAR[0]}
-	echo "Working on $Biosample at /path/to/<PROJECT>/Source/Orig"
+	echo "Working on $Biosample at ${SOURCE_PATH}"
 	RES=${VAR[1]}
 	echo $RES
 	# Define extensions.
