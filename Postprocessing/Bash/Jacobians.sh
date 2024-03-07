@@ -20,6 +20,8 @@ fi
 FILENAME="/path/to/<PROJECT>/Source/<>.txt" 
 # Define atlas file.
 ATLAS="/path/to/<PROJECT>/Source/MNC/<>.mnc"
+# Path to ALL transformation files (.xfm and .mnc non-linear displacement grids; e.g., "/path/to/<PROJECT>/nl/XFM")
+XFM_PATH="/path/to/<PROJECT>/Source/Orig"
 
 # Let's assume all of the transformation (.xfm) data has been stored in /path/to/<PROJECT>/nl/Ana_Test. Start while loop:
 while read -r line
@@ -27,8 +29,8 @@ do
 	# Input specimen image info.
 	Biosample="${line}"
 	# Alter path to images.
-	cd "/path/to/<PROJECT>/nl/Ana_Test"
-	echo "Working on ${Biosample} at /path/to/<PROJECT>/nl/Ana_Test."
+	cd "${XFM_PATH}"
+	echo "Working on ${Biosample} at ${XFM_PATH}."
 	# Define resolution of the atlas, assuming an isotropic scan.
 	ATLAS_RES=$(mincinfo ${ATLAS} -attvalue zspace:step)
 	# Blurring factor of 5 to inevitably blur the determinants.
