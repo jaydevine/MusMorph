@@ -9,28 +9,45 @@ then
     exit
 fi
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# You only need to edit the variables within these dashed lines.
+
+# Define path to MNC files.
+MNC_PATH="/path/to/<PROJECT>/Source/MNC"
+
 # Create a variable called FILENAME that calls upon a .txt file (e.g. spec_list.txt) of specimen names. 
-FILENAME="/path/to/<PROJECT>/Source/<>.txt" 
+FILENAME="/path/to/<PROJECT>/Source/<>.txt"
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Start while loop using the images that have been intensity corrected via Downsample_and_Correct.sh. 
 while read -r line
 do
 	# Input name info.
-	Biosample="${line}_ds_norm.mnc"
+	Biosample="${line}.mnc"
 	# Alter path to images.
-	cd "/path/to/<PROJECT>/Source/MNC"
-	echo "Working on ${Biosample} at /path/to/<PROJECT>/Source/MNC."
+	cd "$MNC_PATH"
+	echo "Working on ${Biosample} at $MNC_PATH."
 	# Get image resolution, assuming isotropic voxels.
 	IMAGE_RES=$(mincinfo ${Biosample} -attvalue zspace:step)
 	BLUR_RES=$(awk "BEGIN {scale=$IMAGE_RES*1.5; print scale}")
 	# Blur file slightly to make intensities more homogeneous for thresholding. 
 	mincblur -clobber -fwhm ${BLUR_RES} ${Biosample} ${line}
-	# Calc lower density bound for thresholding. Use Kapur or Bimodal metric. Bimodal thresholding is our default.
-	BIMODAL=$(mincstats -quiet -biModalT ${line}_blur.mnc)
+	# Prompt user for thresholding method.
+	echo "Select thresholding method: (1) Bimodal or (2) Kapur"
+	read -p "Enter your choice (1/2): " choice
+	if [ "$choice" == "1" ]; then
+		# Calculate lower density bound for thresholding using the Bimodal method.
+		BIMODAL=$(mincstats -quiet -biModalT ${line}_blur.mnc)
+	elif [ "$choice" == "2" ]; then
+		# Calculate lower density bound for thresholding using the Kapur method.
+		KAPUR_STATS=$(mincstats -quiet -kapur ${line}_blur.mnc)
+		KAPUR=$(echo ${KAPUR_STATS} | tr " " "\n" | sed -n '21p')
+	else
+		echo "Invalid choice. Defaulting to Bimodal thresholding."
+		BIMODAL=$(mincstats -quiet -biModalT ${line}_blur.mnc)
+	fi
+
 	ZERO=0
-	# If the bimodal algorithm is too sensitive, try the Kapur algorithm below.
-	KAPUR_STATS=$(mincstats -quiet -kapur ${line}_blur.mnc)
-	KAPUR=$(echo ${KAPUR_STATS} | tr " " "\n" | sed -n '21p')
 	# Calculate upper (max) bound.
 	MAX_STATS=$(mincstats -max ${line}_blur.mnc)
 	MAX=$(echo ${MAX_STATS} | cut -d' ' -f2-)
