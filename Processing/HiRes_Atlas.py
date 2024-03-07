@@ -1,4 +1,4 @@
-# This is a Python script designed to generate an unbiased popoulation average. The script generates a series of bash (.sh) files that should be executed in parallel on a compute cluster. Any compute cluster can be used. To run these scripts, you must install the MINC Toolkit module onto the cluster beforehand, unless one already exists. You will notice here, for example, that we use a module called "minc-toolkit/2016-11", which is defined in the Bash header of every script via "module load minc-toolkit/2016-11". SLURM identifies the software on the cluster using this line. Other parameters you can play around with are time and memory. 
+# This is a Python script designed to generate an unbiased popoulation average. The script generates a series of bash (.sh) files that should be executed in parallel on a compute cluster. Any compute cluster can be used. To run these scripts, you must install the MINC Toolkit module onto the cluster beforehand, unless one already exists. You will notice here, for example, that we use a module called "minc/1.9.15", which is defined in the Bash header of every script via "module load minc/1.9.15". SLURM identifies the software on the cluster using this line. Other parameters you can play around with are time and memory. 
 
 # The resulting Bash scripts non-linearly register high-resolution mouse images (12 um) together. Other resolutions can be used to create an atlas, but the blurring and registratation step values need to be scaled accordingly. For instance, if you have 36 um image files, you would just scale the blurring values and the registration step values by a factor of 3. To execute these scripts, upload them to your remote /path/to/<PROJECT>/Scripts directory, and run "sbatch Job_Submission_First.sh". 
 
@@ -8,98 +8,112 @@ import os
 import csv
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # PLEASE READ! THE ONLY VARIABLES THAT NEED TO BE EDITED WITHIN THIS SCRIPT ARE BETWEEN THESE DASHED LINES.
 
-# 1) Your local and remote directories must be mapped correctly (i.e., the directories match the variables and "<PROJECT>" should be replaced with your project name);
+# 1) "<PROJECT>" should be replaced with your project name;
 # 2) Let's assume your local specimen list is called spec_list.txt;
 # 3) Name your initialized source images $spec.mnc, where $spec is the exact name of the specimen annotated in spec_list.txt; 
-# 4) Let's assume your initial average and average mask are called LM_average.mnc and LM_average_mask.mnc, respectively;
-# 5) The initialized source images, average, and average mask must be sftp'd into your remote /path/to/<PROJECT>/Source/MNC directory on the cluster before any analyses can begin.
-# 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote /path/to/<PROJECT>/Scripts directory.
-
-# LOCAL:
-
-# Change the working directory.
-os.chdir("/path/to/<PROJECT>/Scripts")
-# Define list of all specimens Here, spec_list.txt should be a list of 25 specimens. 
-All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
+# 4) Let's assume your initial average and average mask are called LM_average.mnc and LM_average_mask.mnc, respectively; if they aren't, modify the LM_Avg and LM_Avg_Mask variables.
+# 5) The initialized source images, average, and average mask must be sftp'd into your remote $PROJECT_PATH/Source/MNC directory on the cluster before any analyses can begin.
+# 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote $PROJECT_PATH/Scripts directory.
 
 # Create remote directory structure that matches your local structure. E.g.:
 # mkdir -p <PROJECT>/{Scripts,Quality,Source/{Blurred,MNC,Orig,Resample,Tag,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
 
-# REMOTE:
+# Define project name.
+PROJECT_NAME = "<PROJECT>"
 
-# Define supercomputer paths.
-Scripts_path = "/path/to/<PROJECT>/Scripts/"
-Source_XFM_path = "/path/to/<PROJECT>/Source/XFM/"
-Source_MNC_path = "/path/to/<PROJECT>/Source/MNC/"
-lsq6_Blurred_path = "/path/to/<PROJECT>/lsq6/Blurred/"
-lsq6_XFM_path = "/path/to/<PROJECT>/lsq6/XFM/"
-lsq6_MNC_path = "/path/to/<PROJECT>/lsq6/MNC/"
-lsq12_Blurred_path = "/path/to/<PROJECT>/lsq12/Blurred/"
-lsq12_XFM_path = "/path/to/<PROJECT>/lsq12/XFM/"
-lsq12_MNC_path = "/path/to/<PROJECT>/lsq12/MNC/"
-nl_Init_path = "/path/to/<PROJECT>/nl/INIT/"
-nl_Blurred_path = "/path/to/<PROJECT>/nl/Blurred/"
-nl_XFM_path = "/path/to/<PROJECT>/nl/XFM/"
-nl_MNC_path = "/path/to/<PROJECT>/nl/MNC/"
+# Define /path/to/ project on cluster (e..g, /work/hallgrimsson_lab/)
+PROJECT_PATH = "/path/to/" + PROJECT_NAME + "/"
 
-# Define average files.
-LM_Avg = "/path/to/<PROJECT>/Source/MNC/LM_average.mnc"
-LM_Avg_Mask = "/path/to/<PROJECT>/Source/MNC/LM_average_mask.mnc"
-lsq6_Avg = "/path/to/<PROJECT>/lsq6/<PROJECT>_lsq6_average.mnc"
-lsq12_Avg = "/path/to/<PROJECT>/lsq12/<PROJECT>_lsq12_average.mnc"
-nl_1_Avg = "/path/to/<PROJECT>/nl/MNC/NL_1_average.mnc"
-nl_2_Avg = "/path/to/<PROJECT>/nl/MNC/NL_2_average.mnc"
-nl_3_Avg = "/path/to/<PROJECT>/nl/MNC/NL_3_average.mnc"
-nl_4_Avg = "/path/to/<PROJECT>/nl/MNC/<PROJECT>_Atlas.mnc"
+# Change the local working directory to print out scripts.
+os.chdir("/path/to/<PROJECT>/Scripts")
+# Define list of all specimens Here, spec_list.txt is usually a list of 25 specimens. 
+All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
 
-# Define blur files without "_blur" suffix.
-LM_Avg_167 = "/path/to/<PROJECT>/Source/MNC/LM_average_167"
-LM_Avg_088 = "/path/to/<PROJECT>/Source/MNC/LM_average_088"
-LM_Avg_049 = "/path/to/<PROJECT>/Source/MNC/LM_average_049"
-LM_Avg_039 = "/path/to/<PROJECT>/Source/MNC/LM_average_039"
-LM_Avg_032 = "/path/to/<PROJECT>/Source/MNC/LM_average_032"
-LM_Avg_025 = "/path/to/<PROJECT>/Source/MNC/LM_average_025"
-LM_Avg_Mask_400 = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_400"
-LM_Avg_Mask_300 = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_300"
-LM_Avg_Mask_200 = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_200"
-LM_Avg_Mask_100 = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_100"
-LM_Avg_Mask_167 = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_167"
-LM_Avg_Mask_088 = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_088"
-LM_Avg_Mask_049 = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_049"
-LM_Avg_Mask_039 = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_039"
-LM_Avg_Mask_032 = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_032"
-LM_Avg_Mask_025 = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_025"
-lsq12_Avg_400 = "/path/to/<PROJECT>/nl/INIT/<PROJECT>_lsq12_average_400"
-nl_1_Avg_300 = "/path/to/<PROJECT>/nl/INIT/NL_1_average_300"
-nl_2_Avg_200 = "/path/to/<PROJECT>/nl/INIT/NL_2_average_200"
-nl_3_Avg_100 = "/path/to/<PROJECT>/nl/INIT/NL_3_average_100"
-
-# Define blur files with "_blur" suffix.
-LM_Avg_167_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_167_blur.mnc"
-LM_Avg_088_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_088_blur.mnc"
-LM_Avg_049_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_049_blur.mnc"
-LM_Avg_039_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_039_blur.mnc"
-LM_Avg_032_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_032_blur.mnc"
-LM_Avg_025_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_025_blur.mnc"
-LM_Avg_Mask_400_Blur = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_400_blur.mnc"
-LM_Avg_Mask_300_Blur = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_300_blur.mnc"
-LM_Avg_Mask_200_Blur = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_200_blur.mnc"
-LM_Avg_Mask_100_Blur = "/path/to/<PROJECT>/nl/INIT/LM_average_mask_100_blur.mnc"
-LM_Avg_Mask_167_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_167_blur.mnc"
-LM_Avg_Mask_088_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_088_blur.mnc"
-LM_Avg_Mask_049_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_049_blur.mnc"
-LM_Avg_Mask_039_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_039_blur.mnc"
-LM_Avg_Mask_032_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_032_blur.mnc"
-LM_Avg_Mask_025_Blur = "/path/to/<PROJECT>/Source/MNC/LM_average_mask_025_blur.mnc"
-lsq12_Avg_400_Blur = "/path/to/<PROJECT>/nl/INIT/<PROJECT>_lsq12_average_400_blur.mnc"
-nl_1_Avg_300_Blur = "/path/to/<PROJECT>/nl/INIT/NL_1_average_300_blur.mnc"
-nl_2_Avg_200_Blur = "/path/to/<PROJECT>/nl/INIT/NL_2_average_200_blur.mnc"
-nl_3_Avg_100_Blur = "/path/to/<PROJECT>/nl/INIT/NL_3_average_100_blur.mnc"
+# Cluster parameters:
+Module = "minc/1.9.15"
+n_nodes = "1"
+lsq6_Time = "07:00:00"
+lsq6_Mem = "25000M"
+lsq12_Time = "07:00:00"
+lsq12_Mem = "25000M"
+nl_Time = "11:00:00"
+nl_Mem = "25000M"
+Job_Submission_Time = "05-00:00:00"
+Job_Submission_Mem = "2000M"
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Define supercomputer paths.
+Scripts_path = PROJECT_PATH + "Scripts/"
+Source_XFM_path = PROJECT_PATH + "Source/XFM/"
+Source_MNC_path = PROJECT_PATH + "Source/MNC/"
+lsq6_path = PROJECT_PATH + "lsq6/"
+lsq6_Blurred_path = PROJECT_PATH + "lsq6/Blurred/"
+lsq6_XFM_path = PROJECT_PATH + "lsq6/XFM/"
+lsq6_MNC_path = PROJECT_PATH + "lsq6/MNC/"
+lsq12_path = PROJECT_PATH + "lsq12/"
+lsq12_Blurred_path = PROJECT_PATH + "lsq12/Blurred/"
+lsq12_XFM_path = PROJECT_PATH + "lsq12/XFM/"
+lsq12_MNC_path = PROJECT_PATH + "lsq12/MNC/"
+nl_Init_path = PROJECT_PATH + "nl/INIT/"
+nl_Blurred_path = PROJECT_PATH + "nl/Blurred/"
+nl_XFM_path = PROJECT_PATH + "nl/XFM/"
+nl_MNC_path = PROJECT_PATH + "nl/MNC/"
+
+# Define average files.
+LM_Avg = Source_MNC_path + "LM_average.mnc"
+LM_Avg_Mask = Source_MNC_path + "LM_average_mask.mnc"
+lsq6_Avg = lsq6_path + PROJECT_NAME + "_lsq6_average.mnc"
+lsq12_Avg = lsq12_path + PROJECT_NAME + "_lsq12_average.mnc"
+nl_1_Avg = nl_MNC_path + "NL_1_average.mnc"
+nl_2_Avg = nl_MNC_path + "NL_2_average.mnc"
+nl_3_Avg = nl_MNC_path + "NL_3_average.mnc"
+nl_4_Avg = nl_MNC_path + PROJECT_NAME + "_Atlas.mnc"
+
+# Define blur files without "_blur" suffix.
+LM_Avg_167 = Source_MNC_path + "LM_average_167"
+LM_Avg_088 = Source_MNC_path + "LM_average_088"
+LM_Avg_049 = Source_MNC_path + "LM_average_049"
+LM_Avg_039 = Source_MNC_path + "LM_average_039"
+LM_Avg_032 = Source_MNC_path + "LM_average_032"
+LM_Avg_025 = Source_MNC_path + "LM_average_025"
+LM_Avg_Mask_400 = nl_Init_path + "LM_average_mask_400"
+LM_Avg_Mask_300 = nl_Init_path + "LM_average_mask_300"
+LM_Avg_Mask_200 = nl_Init_path + "LM_average_mask_200"
+LM_Avg_Mask_100 = nl_Init_path + "LM_average_mask_100"
+LM_Avg_Mask_167 = Source_MNC_path + "LM_average_mask_167"
+LM_Avg_Mask_088 = Source_MNC_path + "LM_average_mask_088"
+LM_Avg_Mask_049 = Source_MNC_path + "LM_average_mask_049"
+LM_Avg_Mask_039 = Source_MNC_path + "LM_average_mask_039"
+LM_Avg_Mask_032 = Source_MNC_path + "LM_average_mask_032"
+LM_Avg_Mask_025 = Source_MNC_path + "LM_average_mask_025"
+lsq12_Avg_400 = nl_Init_path + PROJECT_NAME + "_lsq12_average_400"
+nl_1_Avg_300 = nl_Init_path + "NL_1_average_300"
+nl_2_Avg_200 = nl_Init_path + "NL_2_average_200"
+nl_3_Avg_100 = nl_Init_path + "NL_3_average_100"
+
+# Define blur files with "_blur" suffix.
+LM_Avg_167_Blur = Source_MNC_path + "LM_average_167_blur.mnc"
+LM_Avg_088_Blur = Source_MNC_path + "LM_average_088_blur.mnc"
+LM_Avg_049_Blur = Source_MNC_path + "LM_average_049_blur.mnc"
+LM_Avg_039_Blur = Source_MNC_path + "LM_average_039_blur.mnc"
+LM_Avg_032_Blur = Source_MNC_path + "LM_average_032_blur.mnc"
+LM_Avg_025_Blur = Source_MNC_path + "LM_average_025_blur.mnc"
+LM_Avg_Mask_400_Blur = nl_Init_path + "LM_average_mask_400_blur.mnc"
+LM_Avg_Mask_300_Blur = nl_Init_path + "LM_average_mask_300_blur.mnc"
+LM_Avg_Mask_200_Blur = nl_Init_path + "LM_average_mask_200_blur.mnc"
+LM_Avg_Mask_100_Blur = nl_Init_path + "LM_average_mask_100_blur.mnc"
+LM_Avg_Mask_167_Blur = Source_MNC_path + "LM_average_mask_167_blur.mnc"
+LM_Avg_Mask_088_Blur = Source_MNC_path + "LM_average_mask_088_blur.mnc"
+LM_Avg_Mask_049_Blur = Source_MNC_path + "LM_average_mask_049_blur.mnc"
+LM_Avg_Mask_039_Blur = Source_MNC_path + "LM_average_mask_039_blur.mnc"
+LM_Avg_Mask_032_Blur = Source_MNC_path + "LM_average_mask_032_blur.mnc"
+LM_Avg_Mask_025_Blur = Source_MNC_path + "LM_average_mask_025_blur.mnc"
+lsq12_Avg_400_Blur = nl_Init_path + PROJECT_NAME + "_lsq12_average_400_blur.mnc"
+nl_1_Avg_300_Blur = nl_Init_path + "NL_1_average_300_blur.mnc"
+nl_2_Avg_200_Blur = nl_Init_path + "NL_2_average_200_blur.mnc"
+nl_3_Avg_100_Blur = nl_Init_path + "NL_3_average_100_blur.mnc"
 
 # Open and read ('r') the specimen list.
 Specimen_List=open(All_Specimens,'r')
@@ -152,11 +166,10 @@ nl_4_MNC_Avg = "mincaverage -clobber -2 -filetype -nonormalize "
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # 6-parameter (translation (z,y,x), rotation (z,y,x)) optimized rigid body registration.
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Open a file to write to; 'a' for append; lsq6_First is the first 6-parameter .sh script to submit, because it blurs the intended target (i.e., the landmark initialized average) as well as a mask of equivalent resolution to constrain our computation.
 lsq6_First = open("lsq6_First.sh",'a')
 # Write standard .sh header. This header is needed for SLURM job submission.
-lsq6_First.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=05:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+lsq6_First.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq6_Mem + "\n#SBATCH --time=" + lsq6_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 # Write commands to blur LM_average and LM_average_mask with isotropic blurring kernels of 167 microns, 88 microns, and 78 microns. These blur values should be decided upon with respect to the original resolution of the image. Here, we're assuming 35 micron resolution.
 lsq6_First.write(MNC_Blur + "0.167 " + LM_Avg + " " + LM_Avg_167 + "\n")
 lsq6_First.write(MNC_Blur + "0.088 " + LM_Avg + " " + LM_Avg_088 + "\n")
@@ -178,7 +191,7 @@ for SpecID in Specimen_IDs:
 	# Open a file to write to; 'a' for append; lsq6_Second is the second stage of .sh scripts to submit.
 	lsq6_Second = open("lsq6_Second_" + str(i) + ".sh",'a')
 	# Add header.
-	lsq6_Second.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=07:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	lsq6_Second.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq6_Mem + "\n#SBATCH --time=" + lsq6_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	lsq6_Second.write("echo \"Begin the optimized 6-parameter registration for " + SpecID + ".\"\n\n")
 	# Blur each image, as done with the average and average mask, with a 0.167, 0.088, and 0.039 isotropic Gaussian blurring kernel. These blur values should be decided upon with respect to the original resolution of the image.
 	lsq6_Second.write(MNC_Blur + "0.167 " + Source_MNC_path + SpecID + ".mnc " + lsq6_Blurred_path + SpecID + "_167\n")
@@ -197,7 +210,7 @@ for SpecID in Specimen_IDs:
 # Open a file to write to; 'a' for append; lsq6_Third is the third and final stage of 6-parameter .sh scripts to submit.
 lsq6_Third = open("lsq6_Third.sh",'a')
 # Add header.
-lsq6_Third.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=07:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+lsq6_Third.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq6_Mem + "\n#SBATCH --time=" + lsq6_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 lsq6_Third.write("echo \"All lsq6 files are being averaged.\"\n")
 # Add _lsq6.mnc files to MNC_Avg string.
 for SpecID in Specimen_IDs:
@@ -210,11 +223,10 @@ lsq6_Third.close()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # 12-parameter (translation (z,y,x), rotation (z,y,x), scale (z,y,x), shear (z,y,x)) optimized affine registration.
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Open file to write to; 'a' for append; lsq12_First is the first 12-parameter .sh script to submit, because it blurs the like file (LM_average) and the mask to constrain our computation.
 lsq12_First = open("lsq12_First.sh",'a')
 # Add header.
-lsq12_First.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=07:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+lsq12_First.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq12_Mem + "\n#SBATCH --time=" + lsq12_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 lsq12_First.write("echo \"We are blurring LM_average and LM_average_mask.\"\n")
 lsq12_First.write(MNC_Blur + "0.049 " + LM_Avg + " " + LM_Avg_049 + "\n")
 lsq12_First.write(MNC_Blur + "0.032 " + LM_Avg + " " + LM_Avg_032 + "\n")
@@ -235,7 +247,7 @@ for SpecID in Specimen_IDs:
 	# Open a file to write to; 'a' for append; lsq12_Second is the second 12-parameter stage designed to blur every specimen in a descending fashion for the hierarchical registration.
 	lsq12_Second = open("lsq12_Second_" + str(i) + ".sh",'a')
 	# Add header.
-	lsq12_Second.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=07:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	lsq12_Second.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq12_Mem + "\n#SBATCH --time=" + lsq12_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	lsq12_Second.write("echo \"We are blurring " + SpecID + ".\"\n")
 	# Blur the previously created lsq6 images, as done with the average and average mask, with a 0.049, 0.032, and 0.025 isotropic Gaussian blurring kernel. These blur values should be decided upon with respect to the original resolution of the image.
 	lsq12_Second.write(MNC_Blur + "0.049 " + lsq6_MNC_path + SpecID + "_lsq6.mnc " + lsq12_Blurred_path + SpecID + "_049\n")
@@ -251,7 +263,7 @@ lsq12_Third = open("lsq12_Temp_Big.sh",'a')
 for SpecID in Specimen_IDs:
 	for SpecID2 in Specimen_IDs:
 		# Add header.
-		lsq12_Third.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=07:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+		lsq12_Third.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq12_Mem + "\n#SBATCH --time=" + lsq12_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 		# Call the registration strings. We begin with the most blurred (e.g., 0.049 microns) image. -model_mask specifies the mask we wish to use. Note that we use a -model_mask with the same amount of blurring to constrain our computation. -identity specifies an identity matrix that initializes the transformation matrix. Upon specifying a transformation matrix, we extract the relevant transformation parameters (here, rotation and translation) and optimize them to find the best transformation; -transform specifies a file giving a previous source to target mapping, which is used as the new coordinate starting point for the optimization.
 		lsq12_Third.write(lsq12_Register_049_Blur + lsq12_Blurred_path + SpecID + "_049_blur.mnc " + lsq12_Blurred_path + SpecID2 + "_049_blur.mnc " + lsq12_XFM_path + SpecID + "_to_" + SpecID2 + "_lsq12_0.xfm -model_mask " + LM_Avg_Mask_049_Blur + " -identity\n")
 		lsq12_Third.write(lsq12_Register_032_Blur + lsq12_Blurred_path + SpecID + "_032_blur.mnc " + lsq12_Blurred_path + SpecID2 + "_032_blur.mnc " + lsq12_XFM_path + SpecID + "_to_" + SpecID2 + "_lsq12_1.xfm -model_mask " + LM_Avg_Mask_032_Blur + " -transform " + lsq12_XFM_path + SpecID + "_to_" + SpecID2 + "_lsq12_0.xfm\n")
@@ -282,7 +294,7 @@ for Element in list(range(Specimen_List_Length)):
 	# Open a file to write to; 'a' for append; lsq12_Fourth is the fourth stage of the registration. Upon generating transformation (.xfm) outputs for every specimen, we want to average them, concate the average .xfm with previous .xfm files, and use that total concatenated transformation to resample the original specimen into the 12-parameter space.
 	lsq12_Fourth = open("lsq12_Fourth_" + str(Element) + ".sh",'a')
 	# Add header.
-	lsq12_Fourth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=15000M\n#SBATCH --time=05:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	lsq12_Fourth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq12_Mem + "\n#SBATCH --time=" + lsq12_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	# Start XFM_Avg string for each specimen.
 	XFM_Avg ="xfmavg -verbose -clobber "
 	for SpecID in Specimen_IDs[(Specimen_Group*Element):(Specimen_Group*(Element+1))]:
@@ -302,7 +314,7 @@ for Element in list(range(Specimen_List_Length)):
 # Open a file to write to; 'a' for append; lsq12_Fifth is the fifth and final stage of the 12-parameter affine registration. After creating the lsq12 resampled .mnc images, we average these to create a target for non-linear deformations.
 lsq12_Fifth = open("lsq12_Fifth.sh",'a')
 # Add header.
-lsq12_Fifth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=07:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+lsq12_Fifth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + lsq12_Mem + "\n#SBATCH --time=" + lsq12_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 lsq12_Fifth.write("echo \"All lsq12 files are being averaged.\"\n")
 for SpecID in Specimen_IDs:
 	# Add the new $spec_lsq12.mnc files to the Avg_String variable.
@@ -315,11 +327,10 @@ lsq12_Fifth.close()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # FIRST NON-LINEAR STAGE (includes nl_First.sh, nl_Second_*.sh, and nl_Third.sh)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Open a file to write to; 'a' for append; nl_First is the first non-linear deformation script, where we blur the 12-parameter average and mask with the largest blurring kernels.
 nl_First = open("nl_First.sh",'a')
 # Add header.
-nl_First.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+nl_First.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 # Blur the average and average mask with different kernels. Observe that these blurs (1.4mm), relative to those at the 12-parameter stage, are much larger.
 nl_First.write(MNC_Blur + "0.4 " + lsq12_Avg + " " + lsq12_Avg_400 + "\n")
 nl_First.write(MNC_Blur + "0.4 " + LM_Avg_Mask + " " + LM_Avg_Mask_400 + "\n\n")
@@ -331,7 +342,7 @@ for Element in list(range(Specimen_List_Length)):
 	# Open a file to write to; 'a' for append; nl_Second includes the non-linear registrations of the most blurred images.
 	nl_Second = open("nl_Second_" + str(Element) + ".sh",'a')
 	# Add header.
-	nl_Second.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	nl_Second.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	for SpecID in Specimen_IDs[(Specimen_Group*Element):(Specimen_Group*(Element+1))]:
 		# Blur string.
 		nl_Second.write(MNC_Blur + "0.4 " + lsq12_MNC_path + SpecID + "_lsq12.mnc " + nl_Blurred_path + SpecID + "_400\n")
@@ -351,7 +362,7 @@ for SpecID in Specimen_IDs:
 # Open a file to write to; 'a' for append; nl_Third is the averaging of all nl_Second images to create a target for the next set of non-linear deformations.
 nl_Third = open("nl_Third.sh",'a')
 # Add header.
-nl_Third.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+nl_Third.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 nl_Third.write("echo \"All of the first non-linearly deformed files are being averaged.\"\n")
 nl_Third.write(nl_1_MNC_Avg + nl_1_Avg + "\n\n")
 # Blur string for the average and average mask.
@@ -365,13 +376,12 @@ nl_Third.close()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # SECOND NON-LINEAR STAGE (includes nl_Fourth_*.sh and nl_Fifth.sh)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Create .sh files for the second round of non-linear commands (nl_2).
 for Element in list(range(Specimen_List_Length)):
 	# Open a file to write to; 'a' for append; nl_Fourth includes the non-linear registrations of the second most blurred images.
 	nl_Fourth = open("nl_Fourth_" + str(Element) + ".sh",'a')
 	# Add header.
-	nl_Fourth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	nl_Fourth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	for SpecID in Specimen_IDs[(Specimen_Group*Element):(Specimen_Group*(Element+1))]:
 		# Blur string.
 		nl_Fourth.write(MNC_Blur + "0.3 " + lsq12_MNC_path + SpecID + "_lsq12.mnc " + nl_Blurred_path + SpecID + "_300\n")
@@ -391,7 +401,7 @@ for SpecID in Specimen_IDs:
 # Open a file to write to; 'a' for append; nl_Fifth is the averaging of all nl_Fourth images to create a target for the next set of non-linear deformations.
 nl_Fifth = open("nl_Fifth.sh",'a')
 # Add header.
-nl_Fifth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+nl_Fifth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 nl_Fifth.write("echo \"All of the second non-linearly deformed files are being averaged.\"\n")
 nl_Fifth.write(nl_2_MNC_Avg + nl_2_Avg + "\n\n")
 # Blur string for the average and average mask.
@@ -405,13 +415,12 @@ nl_Fifth.close()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # THIRD NON-LINEAR STAGE (includes nl_Sixth_*.sh and nl_Seventh.sh)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Create .sh files for the third round of non-linear commands (nl_3).
 for Element in list(range(Specimen_List_Length)):
 	# Open a file to write to; 'a' for append; nl_Sixth includes the non-linear registrations of the third most blurred images.
 	nl_Sixth = open("nl_Sixth_" + str(Element) + ".sh",'a')
 	# Add header.
-	nl_Sixth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	nl_Sixth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	for SpecID in Specimen_IDs[(Specimen_Group*Element):(Specimen_Group*(Element+1))]:
 		# Blur string.
 		nl_Sixth.write(MNC_Blur + "0.2 " + lsq12_MNC_path + SpecID + "_lsq12.mnc " + nl_Blurred_path + SpecID + "_200\n")
@@ -431,7 +440,7 @@ for SpecID in Specimen_IDs:
 # Open a file to write to; 'a' for append; nl_Seventh is the averaging of all nl_Sixth images to create a target for the final non-linear deformation.
 nl_Seventh = open("nl_Seventh.sh",'a')
 # Add header.
-nl_Seventh.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+nl_Seventh.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 nl_Seventh.write("echo \"All of the third non-linearly deformed files are being averaged.\"\n")
 nl_Seventh.write(nl_3_MNC_Avg + nl_3_Avg + "\n\n")
 # Blur string for the average and average mask.
@@ -445,13 +454,12 @@ nl_Seventh.close()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # FOURTH NON-LINEAR STAGE (includes nl_Sixth_*.sh and nl_Seventh.sh)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Create .sh files for the third round of non-linear commands (nl_3).
 for Element in list(range(Specimen_List_Length)):
 	# Open a file to write to; 'a' for append; nl_Eighth includes the non-linear registrations of the fourth most (least) blurred images.
 	nl_Eighth = open("nl_Eighth_" + str(Element) + ".sh",'a')
 	# Add header.
-	nl_Eighth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=25000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+	nl_Eighth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 	for SpecID in Specimen_IDs[(Specimen_Group*Element):(Specimen_Group*(Element+1))]:
 		# Blur string.
 		nl_Eighth.write(MNC_Blur + "0.1 " + lsq12_MNC_path + SpecID + "_lsq12.mnc " + nl_Blurred_path + SpecID + "_100\n")
@@ -471,7 +479,7 @@ for SpecID in Specimen_IDs:
 # Open a file to write to; 'a' for append; nl_Ninth is the averaging of all nl_Eighth images to create a final average atlas to be labelled.
 nl_Ninth = open("nl_Ninth.sh",'a')
 # Add header.
-nl_Ninth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=20000M\n#SBATCH --time=11:00:00\n\nmodule load minc-toolkit/2016-11\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
+nl_Ninth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + nl_Mem + "\n#SBATCH --time=" + nl_Time + "\n\nmodule load " + Module + "\n\ncd " + Scripts_path + "\n\necho \"The job started at $(date).\"\n\n")
 nl_Ninth.write("echo \"All of the fourth non-linearly deformed files are being averaged.\"\n")
 nl_Ninth.write(nl_4_MNC_Avg + nl_4_Avg + "\n\n")
 nl_Ninth.write("echo \"The job ended at $(date).\"")
@@ -481,117 +489,124 @@ nl_Ninth.close()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Create master job submission scripts for all stages. These scripts will automatically submit all .sh scripts to the queue and will be chained together. In other words, only the first script, Job_Submission_First.sh, needs to be submitted.
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Job_Submission_First (i.e., 6-parameter blurs, registrations, concatenations, resamplings, and the average).
 Job_Submission_First = open("Job_Submission_First.sh",'a')
-Job_Submission_First.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_First.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_First.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_First.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_First.write("cd " + Scripts_path + "\n\n")
 Job_Submission_First.write("sleep 10\n\n")
-Job_Submission_First.write("lsq6_First=$(sbatch lsq6_First.sh)\n\n")
+Job_Submission_First.write("lsq6_First=$(sbatch -W lsq6_First.sh | awk '{print $4}')\n\n")
 Job_Submission_First.write("until [[ $(squeue -t CD -u $USER --noheader -j ${lsq6_First##* } | wc -l) -eq 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_First.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 1 " + str(Specimen_List_Length) + ")\n\n")
 Job_Submission_First.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"lsq6_Second_$NUM.sh\"\nLSQ6=\"sbatch $NAME\"\n$LSQ6\necho $LSQ6\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_First.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_First.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
-Job_Submission_First.write("# Submit 6-parameter average script.\nlsq6_Third=$(sbatch lsq6_Third.sh)\n\n")
+Job_Submission_First.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_First.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_First.write("# Submit 6-parameter average script.\nlsq6_Third=$(sbatch -W lsq6_Third.sh | awk '{print $4}')\n\n")
 Job_Submission_First.write("#----------------------------------------------------- Submit next job submission script after average finishes and remove current submission script from the queue.\n\n")
 Job_Submission_First.write("sbatch --dependency=afterok:${lsq6_Third##* } Job_Submission_Second.sh\n\n")
 Job_Submission_First.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_First.write("scancel -u $USER --jobname=Job_Submission_First.sh")
 # Job_Submission_Second (i.e., 12-parameter blurs).
 Job_Submission_Second = open("Job_Submission_Second.sh",'a')
-Job_Submission_Second.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Second.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Second.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Second.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Second.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Second.write("sleep 10\n\n")
-Job_Submission_Second.write("lsq12_First=$(sbatch lsq12_First.sh)\n\n")
+Job_Submission_Second.write("lsq12_First=$(sbatch -W lsq12_First.sh | awk '{print $4}')\n\n")
 Job_Submission_Second.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 1 " + str(Specimen_List_Length) + ")\n\n")
 Job_Submission_Second.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"lsq12_Second_$NUM.sh\"\nLSQ12=\"sbatch $NAME\"\n$LSQ12\necho $LSQ12\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Second.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Second.write("# Create while loop to idle submission script before the registrations.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Second.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Second.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Second.write("#----------------------------------------------------- Submit 12-parameter registration job submission script and remove current submission script from the queue.\n\n")
 Job_Submission_Second.write("Job_Submission_Third=$(sbatch Job_Submission_Third.sh)\n\n")
 Job_Submission_Second.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_Second.write("scancel -u $USER --jobname=Job_Submission_Second.sh")
 # Job_Submission_Third (i.e., 12-parameter pairwise registrations).
 Job_Submission_Third = open("Job_Submission_Third.sh",'a')
-Job_Submission_Third.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Third.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Third.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Third.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Third.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Third.write("sleep 10\n\n")
 Job_Submission_Third.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 0 " + str(Specimen_Upper) + ")\n\n")
 Job_Submission_Third.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"lsq12_Third_$NUM.sh\"\nLSQ12=\"sbatch $NAME\"\n$LSQ12\necho $LSQ12\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Third.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Third.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Third.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Third.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Third.write("#----------------------------------------------------- Submit xfm average, concatenating, and resampling job submission script and remove current submission script from the queue.\n\n")
 Job_Submission_Third.write("Job_Submission_Fourth=$(sbatch Job_Submission_Fourth.sh)\n\n")
 Job_Submission_Third.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_Third.write("scancel -u $USER --jobname=Job_Submission_Third.sh")
 # Job_Submission_Fourth (i.e., 12-parameter concatenations, resamplings, and the average).
 Job_Submission_Fourth = open("Job_Submission_Fourth.sh",'a')
-Job_Submission_Fourth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Fourth.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Fourth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Fourth.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Fourth.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Fourth.write("sleep 10\n\n")
 Job_Submission_Fourth.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 0 " + str(Specimen_List_Length-1) + ")\n\n")
 Job_Submission_Fourth.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"lsq12_Fourth_$NUM.sh\"\nLSQ12=\"sbatch $NAME\"\n$LSQ12\necho $LSQ12\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Fourth.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Fourth.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Fourth.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Fourth.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Fourth.write("#----------------------------------------------------- Submit lsq12 average job submission script and the first non-linear (NL_1) dependency, then remove current submission script from the queue.\n\n")
-Job_Submission_Fourth.write("lsq12_Fifth=$(sbatch lsq12_Fifth.sh)\n\n")
+Job_Submission_Fourth.write("lsq12_Fifth=$(sbatch -W lsq12_Fifth.sh  | awk '{print $4}')\n\n")
 Job_Submission_Fourth.write("sbatch --dependency=afterok:${lsq12_Fifth##* } Job_Submission_Fifth.sh\n\n")
 Job_Submission_Fourth.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_Fourth.write("scancel -u $USER --jobname=Job_Submission_Fourth.sh")
 # Job_Submission_Fifth (i.e., NL_1 and the first hierarchical non-linear registration).
 Job_Submission_Fifth = open("Job_Submission_Fifth.sh",'a')
-Job_Submission_Fifth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Fifth.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Fifth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Fifth.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Fifth.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Fifth.write("sleep 10\n\n")
-Job_Submission_Fifth.write("nl_First=$(sbatch nl_First.sh)\n\n")
+Job_Submission_Fifth.write("nl_First=$(sbatch -W nl_First.sh | awk '{print $4}')\n\n")
 Job_Submission_Fifth.write("until [[ $(squeue -t CD -u $USER --noheader -j ${nl_First##* } | wc -l) -eq 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Fifth.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 0 " + str(Specimen_List_Length-1) + ")\n\n")
 Job_Submission_Fifth.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"nl_Second_$NUM.sh\"\nNL1=\"sbatch $NAME\"\n$NL1\necho $NL1\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Fifth.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Fifth.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Fifth.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Fifth.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Fifth.write("#----------------------------------------------------- Submit NL_1 average job submission script and the second non-linear (NL_2) dependency, then remove current submission script from the queue.\n\n")
-Job_Submission_Fifth.write("nl_Third=$(sbatch nl_Third.sh)\n\n")
+Job_Submission_Fifth.write("nl_Third=$(sbatch -W nl_Third.sh | awk '{print $4}')\n\n")
 Job_Submission_Fifth.write("sbatch --dependency=afterok:${nl_Third##* } Job_Submission_Sixth.sh\n\n")
 Job_Submission_Fifth.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_Fifth.write("scancel -u $USER --jobname=Job_Submission_Fifth.sh")
 # Job_Submission_Sixth (i.e., NL_2 and the second hierarchical non-linear registration).
 Job_Submission_Sixth = open("Job_Submission_Sixth.sh",'a')
-Job_Submission_Sixth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Sixth.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Sixth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Sixth.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Sixth.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Sixth.write("sleep 10\n\n")
 Job_Submission_Sixth.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 0 " + str(Specimen_List_Length-1) + ")\n\n")
 Job_Submission_Sixth.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"nl_Fourth_$NUM.sh\"\nNL2=\"sbatch $NAME\"\n$NL2\necho $NL2\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Sixth.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Sixth.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Sixth.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Sixth.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Sixth.write("#----------------------------------------------------- Submit NL_2 average job submission script and the third non-linear (NL_3) dependency, then remove current submission script from the queue.\n\n")
-Job_Submission_Sixth.write("nl_Fifth=$(sbatch nl_Fifth.sh)\n\n")
+Job_Submission_Sixth.write("nl_Fifth=$(sbatch -W nl_Fifth.sh | awk '{print $4}')\n\n")
 Job_Submission_Sixth.write("sbatch --dependency=afterok:${nl_Fifth##* } Job_Submission_Seventh.sh\n\n")
 Job_Submission_Sixth.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_Sixth.write("scancel -u $USER --jobname=Job_Submission_Sixth.sh")
 # Job_Submission_Seventh (i.e., NL_3 and the third hierarchical non-linear registration).
 Job_Submission_Seventh = open("Job_Submission_Seventh.sh",'a')
-Job_Submission_Seventh.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Seventh.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Seventh.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Seventh.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Seventh.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Seventh.write("sleep 10\n\n")
 Job_Submission_Seventh.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 0 " + str(Specimen_List_Length-1) + ")\n\n")
 Job_Submission_Seventh.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"nl_Sixth_$NUM.sh\"\nNL3=\"sbatch $NAME\"\n$NL3\necho $NL3\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Seventh.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Seventh.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Seventh.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Seventh.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Seventh.write("#----------------------------------------------------- Submit NL_3 average job submission script and the fourth non-linear (NL_4) dependency, then remove current submission script from the queue.\n\n")
-Job_Submission_Seventh.write("nl_Seventh=$(sbatch nl_Seventh.sh)\n\n")
+Job_Submission_Seventh.write("nl_Seventh=$(sbatch -W nl_Seventh.sh  | awk '{print $4}')\n\n")
 Job_Submission_Seventh.write("sbatch --dependency=afterok:${nl_Seventh##* } Job_Submission_Eighth.sh\n\n")
 Job_Submission_Seventh.write("echo \"The job ended at $(date).\"\n")
 Job_Submission_Seventh.write("scancel -u $USER --jobname=Job_Submission_Seventh.sh")
 # Job_Submission_Eighth (i.e., NL_4 and the third hierarchical non-linear registration).
 Job_Submission_Eighth = open("Job_Submission_Eighth.sh",'a')
-Job_Submission_Eighth.write("#!/bin/bash\n#SBATCH --nodes=1\n#SBATCH --mem=2000M\n#SBATCH --time=05-00:00:00\n#SBATCH --job-name=Job_Submission_Eighth.sh\n\necho \"The job started at $(date).\"\n\n")
+Job_Submission_Eighth.write("#!/bin/bash\n#SBATCH --nodes=" + n_nodes + "\n#SBATCH --mem=" + Job_Submission_Mem + "\n#SBATCH --time=" + Job_Submission_Time + "\n#SBATCH --job-name=Job_Submission_Eighth.sh\n\necho \"The job started at $(date).\"\n\n")
 Job_Submission_Eighth.write("cd " + Scripts_path + "\n\n")
 Job_Submission_Eighth.write("sleep 10\n\n")
 Job_Submission_Eighth.write("# Generate a sequence of numbers.\nNUMBERS=$(seq 0 " + str(Specimen_List_Length-1) + ")\n\n")
 Job_Submission_Eighth.write("# For loop to automatically submit your jobs.\nfor NUM in $NUMBERS; do\nNAME=\"nl_Eighth_$NUM.sh\"\nNL4=\"sbatch $NAME\"\n$NL4\necho $NL4\n# Sleep script in 3 second intervals.\nsleep 3\ndone\n\n")
 Job_Submission_Eighth.write("# Sleep script for 5 seconds before while loop.\nsleep 5\n\n")
-Job_Submission_Eighth.write("# Create while loop to idle submission script before the averaging.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Eighth.write("# Create while loop for PD jobs to idle submission script.\nwhile [[ $(squeue -t PD -u $USER --noheader | wc -l) -gt 0 ]]; do\nsleep 5\ndone\n\n")
+Job_Submission_Eighth.write("# Create while loop for R jobs to idle submission script.\nwhile [[ $(squeue -t R -u $USER --noheader | wc -l) -gt 1 ]]; do\nsleep 5\ndone\n\n")
 Job_Submission_Eighth.write("#----------------------------------------------------- Submit final NL_4 average script.\n\n")
-Job_Submission_Eighth.write("nl_Ninth=$(sbatch nl_Ninth.sh)\n\n")
+Job_Submission_Eighth.write("nl_Ninth=$(sbatch -W nl_Ninth.sh | awk '{print $4}')\n\n")
 Job_Submission_Eighth.write("echo \"The job ended at $(date).\"\n")
