@@ -10,13 +10,19 @@ then
 fi
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# You only need to edit the variables within these dashed lines.
+# You only need to uncomment and edit the variables below if you don't use raw input.
 
 # Create a .txt file with the specimen names in the first column, excluding the file extension, and the original image resolutions (mm) in the second column. Use a space to delimit columns.
-FILENAME="/path/to/<PROJECT>/Source/<>.txt" 
+# FILENAME="/path/to/<PROJECT>/Source/<>.txt" 
 
 # Path to original images.
-SOURCE_PATH="/path/to/<PROJECT>/Source/Orig"
+# SOURCE_PATH="/path/to/<PROJECT>/Source/Orig"
+
+# Prompt for FILENAME
+read -p "Enter the path to the file containing the list of specimen names. This .txt file should have specimen names in the first column, excluding the file extension, and the original image resolutions (mm) in the second column. Use a space to delimit columns (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): " FILENAME
+
+# Prompt for MNC_PATH
+read -p "Enter the path to the directory containing the original images (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/Orig/): " MNC_PATH
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

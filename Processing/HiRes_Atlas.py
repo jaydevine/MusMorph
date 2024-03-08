@@ -17,31 +17,53 @@ import csv
 # 5) The initialized source images, average, and average mask must be sftp'd into your remote $PROJECT_PATH/Source/MNC directory on the cluster before any analyses can begin.
 # 6) The Bash (.sh) scripts you generate from running this Python script should be sftp'd into your remote $PROJECT_PATH/Scripts directory.
 
-# Create remote directory structure that matches your local structure. E.g.:
-# mkdir -p <PROJECT>/{Scripts,Quality,Source/{Blurred,MNC,Orig,Resample,Tag,XFM},lsq6/{Blurred,MNC,XFM},lsq12/{Blurred,MNC,XFM},nl/{Ana_Test,Blurred,INIT,MNC,XFM}}
+# Define project name on cluster.
+PROJECT_NAME = input("Enter project name (e.g., Fgf8): ")
 
-# Define project name.
-PROJECT_NAME = "<PROJECT>"
+# Define project path on cluster.
+CLUSTER_PATH = input("Enter project path on cluster (e.g., /work/hallgrimsson_lab/): ")
 
-# Define /path/to/ project on cluster (e..g, /work/hallgrimsson_lab/)
-PROJECT_PATH = "/path/to/" + PROJECT_NAME + "/"
+# Define full project path on cluster.
+PROJECT_PATH = CLUSTER_PATH + PROJECT_NAME + "/"
+
+# Echo reminder to create remote directory structure.
+print("\nCreate directory structure on cluster that roughly matches your local structure. E.g.:\n")
+print(f"mkdir -p {PROJECT_PATH}{{Scripts,Quality,Source/{{Blurred,MNC,Orig,Resample,Tag,XFM}},lsq6/{{Blurred,MNC,XFM}},lsq12/{{Blurred,MNC,XFM}},nl/{{Ana_Test,Blurred,INIT,MNC,XFM}}}}\n")
 
 # Change the local working directory to print out scripts.
-os.chdir("/path/to/<PROJECT>/Scripts")
-# Define list of all specimens Here, spec_list.txt is usually a list of 25 specimens. 
-All_Specimens = "/path/to/<PROJECT>/Source/spec_list.txt"
+LOCAL_SCRIPT_PATH = input("Enter path to local scripts directory (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Scripts/): ")
+os.chdir(LOCAL_SCRIPT_PATH)
+
+# Define path to list specimens Here, spec_list.txt is usually a list of 25 specimens. 
+All_Specimens = input("Enter path to listen of specimens (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): ")
 
 # Cluster parameters:
 Module = "minc/1.9.15"
 n_nodes = "1"
 lsq6_Time = "07:00:00"
-lsq6_Mem = "25000M"
+lsq6_Mem = "30000M"
 lsq12_Time = "07:00:00"
-lsq12_Mem = "25000M"
+lsq12_Mem = "30000M"
 nl_Time = "11:00:00"
-nl_Mem = "25000M"
+nl_Mem = "30000M"
 Job_Submission_Time = "05-00:00:00"
 Job_Submission_Mem = "2000M"
+
+# Echo default parameters.
+print("\nThese are the default compute cluster parameters:")
+print(f"Module: {Module}")
+print(f"Number of nodes: {n_nodes}")
+print(f"lsq6 Time: {lsq6_Time}")
+print(f"lsq6 Memory: {lsq6_Mem}")
+print(f"lsq12 Time: {lsq12_Time}")
+print(f"lsq12 Memory: {lsq12_Mem}")
+print(f"nl Time: {nl_Time}")
+print(f"nl Memory: {nl_Mem}")
+print(f"Job Submission Time: {Job_Submission_Time}")
+print(f"Job Submission Memory: {Job_Submission_Mem}\n")
+
+# Reminder to change parameters if needed.
+print(f"They need to be changed manually if you encounter any errors. Please put these scripts into the {PROJECT_PATH}Scripts directory and all of your image data into the {PROJECT_PATH}Source/MNC/ directory. \n")
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Define supercomputer paths.

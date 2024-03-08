@@ -10,17 +10,27 @@ then
 fi
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# You only need to edit the variables within these dashed lines.
+# You only need to uncomment and edit the variables below if you don't use raw input.
 
 # Create a variable called FILENAME that calls upon a .txt file (e.g. spec_list.txt) of specimen names (e.g., "/mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt").
-FILENAME=""
+# FILENAME=""
+
 # Define atlas file (include .mnc extension; e.g., "/mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/MNC/Calgary_Adult_Skull_Atlas.mnc")
-ATLAS=""
-# Define path to MNC files.
-MNC_PATH="/path/to/<PROJECT>/Source/MNC/"
+# ATLAS=""
+
+# Define path to MNC files (e.g., "/mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/MNC/").
+# MNC_PATH=""
+
+# Prompt for FILENAME
+read -p "Enter the path to the file containing the list of specimen names (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): " FILENAME
+
+# Prompt for ATLAS
+read -p "Enter the path to the atlas file (include .mnc extension; e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/MNC/Calgary_Adult_Skull_Atlas.mnc): " ATLAS
+
+# Prompt for MNC_PATH
+read -p "Enter the path to MNC files (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/MNC/): " MNC_PATH
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Default values
 RESAMPLE="false"
 CORRECT_INTENSITY="true"
@@ -48,7 +58,7 @@ do
 	Biosample_CORR_IMP="${line}_ds_corr.imp"
 	Biosample_NORM="${line}_ds_norm.mnc"
 	# Alter path to images.
-	cd ${PATH}
+	cd ${MNC_PATH}
 	echo "Working on ${Biosample}."
 
 	# Image dimension info.

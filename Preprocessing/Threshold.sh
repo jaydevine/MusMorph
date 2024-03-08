@@ -10,15 +10,21 @@ then
 fi
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# You only need to edit the variables within these dashed lines.
-
-# Define path to MNC files.
-MNC_PATH="/path/to/<PROJECT>/Source/MNC"
+# You only need to uncomment and edit the variables below if you don't use raw input.
 
 # Create a variable called FILENAME that calls upon a .txt file (e.g. spec_list.txt) of specimen names. 
-FILENAME="/path/to/<PROJECT>/Source/<>.txt"
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# FILENAME="/path/to/<PROJECT>/Source/<>.txt"
 
+# Define path to MNC files.
+# MNC_PATH="/path/to/<PROJECT>/Source/MNC"
+
+# Prompt for FILENAME
+read -p "Enter the path to the file containing the list of specimen names (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): " FILENAME
+
+# Prompt for MNC_PATH
+read -p "Enter the path to MNC files (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/MNC/): " MNC_PATH
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Start while loop using the images that have been intensity corrected via Downsample_and_Correct.sh. 
 while read -r line
 do

@@ -9,7 +9,15 @@ if ! command -v dcm2mnc &> /dev/null; then
 fi
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# No variables to edit.
+# You only need to uncomment and edit the variables below if you don't use raw input.
+
+# Path to original images.
+# SOURCE_PATH="/path/to/<PROJECT>/Source/Orig/"
+
+# Path to original images.
+read -p "Enter the path to the directory containing the original DICOM stacks (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/Orig/): " SOURCE_PATH
+
+cd ${SOURCE_PATH}
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Run dcm2mnc command. This command will convert each directory into a .mnc file. Each .mnc file will be named according to the directory. 

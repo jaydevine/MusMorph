@@ -9,13 +9,19 @@ if ! command -v rawtominc &> /dev/null; then
 fi
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# You only need to edit the variables within these dashed lines.
+# You only need to uncomment and edit the variables below if you don't use raw input.
 
 # Path to specimen list .txt file.
-FILENAME="/path/to/<PROJECT>/Source/<>.txt"
+# FILENAME="/path/to/<PROJECT>/Source/<>.txt"
 
 # Path to original images.
-SOURCE_PATH="/path/to/<PROJECT>/Source/Orig"
+# SOURCE_PATH="/path/to/<PROJECT>/Source/Orig/"
+
+# Path to specimen list .txt file.
+read -p "Enter the path to the file containing the list of specimen names (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): " FILENAME
+
+# Path to original images.
+read -p "Enter the path to the directory containing the original images (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/Orig/): " SOURCE_PATH
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -23,9 +29,9 @@ SOURCE_PATH="/path/to/<PROJECT>/Source/Orig"
 while IFS= read -r Biosample || [[ -n "$Biosample" ]]; do
     echo "Working on $Biosample at $SOURCE_PATH"
     # Define file paths
-    TXTFILE="$SOURCE_PATH/$Biosample.txt"
-    AIMFILE="$SOURCE_PATH/$Biosample.aim"
-    MNCFILE="$SOURCE_PATH/$Biosample.mnc"
+    TXTFILE="${SOURCE_PATH}${Biosample}.txt"
+    AIMFILE="${SOURCE_PATH}${Biosample}.aim"
+    MNCFILE="${SOURCE_PATH}${Biosample}.mnc"
 
     # Convert DOS to Unix format
     dos2unix "$TXTFILE"
@@ -52,9 +58,9 @@ while IFS= read -r Biosample || [[ -n "$Biosample" ]]; do
 
     # Create montage image
     QCPOST="_QC.png"
-    QCFILE="$SOURCE_PATH/$Biosample$QCPOST"
+    QCFILE="${SOURCE_PATH}${Biosample}${QCPOST}"
     LABPOST="_QC_labeled.png"
-    LABFILE="$SOURCE_PATH/$Biosample$LABPOST"
+    LABFILE="${SOURCE_PATH}${Biosample}${LABPOST}"
     mincpik -clobber -scale 20 -triplanar "$MNCFILE" "$QCFILE"
     convert -label "$Biosample" "$QCFILE" "$LABFILE"
 
@@ -63,5 +69,5 @@ while IFS= read -r Biosample || [[ -n "$Biosample" ]]; do
 done < "$FILENAME"
 
 # Create a montage of the converted images
-MONTAGE_CMD="montage -geometry +2+2 $MONTAGE_CMD $SOURCE_PATH/Montage.png"
+MONTAGE_CMD="montage -geometry +2+2 $MONTAGE_CMD ${SOURCE_PATH}Montage.png"
 eval "$MONTAGE_CMD"
