@@ -32,12 +32,34 @@ LOCAL_SCRIPT_PATH = input("Enter path to local scripts directory (e.g., /mnt/Sto
 os.chdir(LOCAL_SCRIPT_PATH)
 
 # Define path to list specimens Here, spec_list.txt is usually a list of 25 specimens. 
-All_Specimens = input("Enter path to listen of specimens (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): ")
+All_Specimens = input("Enter path to list of specimens (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/spec_list.txt): ")
 
 # Define atlas files.
 Atlas = input("Enter name of atlas (e.g., Calgary_Adult_Skull_Atlas.mnc): ")
 Atlas_Mask = input("Enter name of atlas mask (e.g., Calgary_Adult_Skull_Atlas_Mask.mnc): ")
-Atlas_Segs = input("Enter name of atlas segmentations (e.g., Calgary_Adult_Skull_Atlas_Segs.mnc): ")
+Atlas_Segs = input("Enter name of atlas segmentations (e.g., Calgary_Adult_Skull_Atlas_Segs.mnc). If you don't have any, just leave blank and hit Enter: ")
+
+# Initialize an empty dictionary for tag files
+tag_files = {}
+
+# Ask the user for a list of tag files
+tag_file_list = input("Enter a list of tag files separated by comma *ORDER MATTERS* (e.g., Calgary_Adult_Cranium_Atlas_Landmarks.tag, Calgary_Adult_Endocast_Atlas_Landmarks.tag, Calgary_Adult_Mandible_Atlas_Landmarks.tag): ")
+tag_files_list = tag_file_list.split(",")
+
+# Ask the user to associate each tag file with an anatomy term
+if tag_file_list.strip() != "":
+    anatomy_terms = input("Enter the associated anatomy term for each tag file separated by comma *ORDER MATTERS* (e.g., Cranium, Endocast, Mandible): ")
+    anatomy_terms_list = anatomy_terms.split(",")
+else:
+    anatomy_terms_list = []
+
+# Add each tag file and its associated anatomy term to the tag_files dictionary
+for idx, tag_file in enumerate(tag_files_list):
+    if idx < len(anatomy_terms_list):
+        anatomy_term = anatomy_terms_list[idx]
+    else:
+        anatomy_term = ""
+    tag_files[f"Tag{idx+1}"] = (tag_file.strip(), anatomy_term.strip())
 
 # Cluster parameters:
 Module = "minc/1.9.15"
@@ -81,7 +103,8 @@ nl_MNC_path = PROJECT_PATH + "nl/MNC/"
 # Define full paths to atlas files.
 Atlas_Avg = Source_MNC_path + Atlas
 Atlas_Avg_Mask = Source_MNC_path + Atlas_Mask
-Atlas_Avg_Segs = Source_MNC_path + Atlas_Segs
+if Atlas_Segs:
+    Atlas_Avg_Segs = Source_MNC_path + Atlas_Segs
 
 # Open and read ('r') the all specimen list.
 Specimen_List=open(All_Specimens,'r')
@@ -99,29 +122,6 @@ Specimen_Group=int(Specimen_List_Length/Specimen_List_Length)
 Specimen_Upper=(Specimen_List_Length)-1
 # Close the specimen list.
 Specimen_List.close()
-
-# Initialize an empty dictionary for tag files
-tag_files = {}
-
-# Ask the user for a list of tag files
-tag_file_list = input("Enter a list of tag files separated by comma (e.g., Calgary_Adult_Cranium_Atlas_Landmarks.tag, Calgary_Adult_Endocast_Atlas_Landmarks.tag): ")
-tag_files_list = tag_file_list.split(",")
-
-# Ask the user to associate each tag file with an anatomy term
-if tag_file_list.strip() != "":
-    anatomy_terms = input("Enter the associated anatomy term for each tag file separated by comma (e.g., Cranium, Endocast): ")
-    anatomy_terms_list = anatomy_terms.split(",")
-else:
-    anatomy_terms_list = []
-
-# Add each tag file and its associated anatomy term to the tag_files dictionary
-for idx, tag_file in enumerate(tag_files_list):
-    if idx < len(anatomy_terms_list):
-        anatomy_term = anatomy_terms_list[idx]
-    else:
-        anatomy_term = ""
-    tag_files[f"Tag{idx+1}"] = (tag_file.strip(), anatomy_term.strip())
-
 
 # Create .sh files for landmarks and segmentations.
 # Begin a counter.
