@@ -7,7 +7,7 @@ Preprocessing and initialization can easily be performed on a local machine.
 
 After downloading the MINC software, add it to your ~/.bashrc script (Linux) or ~/.bash_profile (Mac):  
 
-`nano ~/.bashrc` # scroll to the bottom and add ". /opt/minc/1.9.18/minc-toolkit-config.sh" to call the software in every new Terminal. Ctrl+X+X to save and exit.
+`echo '. /opt/minc/1.9.18/minc-toolkit-config.sh' >> ~/.bashrc`
 
 Alternatively, if you're struggling with the download or want a more comprehensive installation, you can load in the Docker image I created:
 
