@@ -23,7 +23,7 @@ read -p "Enter the path to the file containing the list of specimen names (e.g.,
 read -p "Enter the full path to the atlas file (include .mnc extension; e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/Source/MNC/Calgary_Adult_Skull_Atlas.mnc): " ATLAS
 
 # Prompt for XFM_PATH
-read -p "Enter the path to the XFM files (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/nl/Ana_Test/): " XFM_PATH
+read -p "Enter the path to the lsq12 and non-linear XFM files (e.g., /mnt/Storage1/Hallgrimsson/Users/Jay/Workshop/nl/Ana_Test/): " XFM_PATH
 
 # Prompt for form determinants computation
 read -p "Compute determinants for form? [true/false]: " compute_form
